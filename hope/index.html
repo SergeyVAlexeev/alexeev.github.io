@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HOPE | Sergey Alexeev</title>
+  <meta name="description" content="HOPE: Health Outcomes and Post-incarceration Evaluation." />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#111111;
+      --muted:#555;
+      --rule:#e6e6e6;
+      --link:#0b57d0;
+      --soft:#f7f7f7;
+      --max:900px;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0b0c;
+        --fg:#eaeaea;
+        --muted:#b8b8b8;
+        --rule:#232323;
+        --link:#7ab7ff;
+        --soft:#141416;
+      }
+    }
+
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--fg);}
+    body{font:16px/1.6 ui-serif, Georgia, "Times New Roman", Times, serif;}
+    a{color:var(--link);}
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:56px 20px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:42px;
+    }
+
+    .site-link{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:14px;
+    }
+
+    .site-link:hover{
+      color:var(--link);
+      text-decoration:underline;
+    }
+
+    .pill{
+      border:1px solid var(--rule);
+      border-radius:999px;
+      padding:3px 10px;
+      font-size:14px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    header{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 150px;
+      gap:28px;
+      align-items:start;
+      padding-bottom:28px;
+      border-bottom:1px solid var(--rule);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(42px, 8vw, 78px);
+      line-height:.95;
+      letter-spacing:0;
+    }
+
+    .subtitle{
+      margin:12px 0 0;
+      color:var(--muted);
+      font-size:20px;
+      line-height:1.35;
+    }
+
+    .standfirst{
+      margin:22px 0 0;
+      font-size:18px;
+      max-width:720px;
+    }
+
+    .portrait{
+      width:150px;
+      height:auto;
+      border-radius:6px;
+      border:1px solid var(--rule);
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:24px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--rule);
+      background:transparent;
+      color:var(--fg);
+      text-decoration:none;
+      font-size:14px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      font-weight:600;
+    }
+
+    .btn:hover{
+      border-color:var(--link);
+      color:var(--link);
+    }
+
+    section{
+      padding:28px 0;
+      border-bottom:1px solid var(--rule);
+    }
+
+    h2{
+      margin:0 0 10px;
+      font-size:18px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    p{margin:10px 0;}
+    ul{margin:8px 0 0 18px; padding:0;}
+    li{margin:8px 0;}
+    .meta{color:var(--muted);}
+
+    .facts{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .fact{
+      border-top:1px solid var(--rule);
+      padding-top:10px;
+    }
+
+    .fact b{
+      display:block;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .fact span{
+      display:block;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .note{
+      background:var(--soft);
+      border:1px solid var(--rule);
+      border-radius:6px;
+      padding:14px 16px;
+      margin-top:18px;
+    }
+
+    footer{
+      padding-top:28px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    @media (max-width:700px){
+      .wrap{padding:32px 20px;}
+      .top{align-items:flex-start; flex-direction:column; margin-bottom:28px;}
+      header{grid-template-columns:1fr;}
+      .portrait{width:120px; grid-row:1;}
+      .facts{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <nav class="top" aria-label="Page navigation">
+      <a class="site-link" href="/">Sergey Alexeev</a>
+      <span class="pill">Proposed project</span>
+    </nav>
+
+    <header>
+      <div>
+        <h1>HOPE</h1>
+        <p class="subtitle">Health Outcomes and Post-incarceration Evaluation</p>
+        <p class="standfirst">
+          HOPE is a proposed Australian research project on how imprisonment affects health, comparing people sent to prison with people given community orders.
+        </p>
+
+        <div class="actions" aria-label="Project documents">
+          <a class="btn" href="https://www.dropbox.com/scl/fi/ji75pcc1pwlrwhi2tr8lz/HOPE-23-July-25-Final.pdf?rlkey=fwtiffucu5uek43qxl8gbas6r&dl=0" target="_blank" rel="noopener">Proposal</a>
+          <a class="btn" href="https://www.dropbox.com/scl/fi/wldfqll1o0xtizy1brff3/OUTCOME-REJECTION.pdf?rlkey=8v778vdsle4qi4b8ik17jpq56&dl=0" target="_blank" rel="noopener">Feedback</a>
+        </div>
+      </div>
+
+      <img class="portrait" src="/Alexeev%20Headshot%20trunc.jpg" alt="Sergey Alexeev">
+    </header>
+
+    <section>
+      <h2>Question</h2>
+      <p>
+        The project asks what happens to people's health after prison, and whether the health effects differ from outcomes after community-based orders.
+      </p>
+      <p>
+        It is designed to produce clear, decision-facing evidence for justice and health policy in Australia, with particular attention to outcomes for Aboriginal people and communities.
+      </p>
+    </section>
+
+    <section>
+      <h2>Approach</h2>
+      <p>
+        HOPE compares people who receive custodial sentences with similar people who receive community orders. The goal is to estimate the effect of imprisonment itself, rather than simply describing the health profile of people who enter prison.
+      </p>
+
+      <div class="facts" aria-label="Project features">
+        <div class="fact">
+          <b>Population</b>
+          <span>People moving through Australian justice pathways.</span>
+        </div>
+        <div class="fact">
+          <b>Comparison</b>
+          <span>Custodial sentences and community orders.</span>
+        </div>
+        <div class="fact">
+          <b>Purpose</b>
+          <span>Evidence for health, justice, and reintegration policy.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Why It Matters</h2>
+      <p>
+        Prison can change access to care, continuity of treatment, mental health, substance use risks, housing stability, employment, and family life. Those pathways are deeply connected, so the project treats health after imprisonment as both a clinical and social policy question.
+      </p>
+      <p>
+        By working with Aboriginal leaders and people with lived experience, HOPE aims to make the research more accountable to the communities most affected by incarceration.
+      </p>
+    </section>
+
+    <section>
+      <h2>Outputs</h2>
+      <ul>
+        <li>Policy-ready estimates of the health effects of imprisonment.</li>
+        <li>Plain-language summaries for partners, communities, and policymakers.</li>
+        <li>Academic papers on post-incarceration health and causal evaluation in justice settings.</li>
+      </ul>
+
+      <p class="note">
+        Current documents: <a href="https://www.dropbox.com/scl/fi/ji75pcc1pwlrwhi2tr8lz/HOPE-23-July-25-Final.pdf?rlkey=fwtiffucu5uek43qxl8gbas6r&dl=0" target="_blank" rel="noopener">proposal under EMC MRFF</a>
+        and <a href="https://www.dropbox.com/scl/fi/wldfqll1o0xtizy1brff3/OUTCOME-REJECTION.pdf?rlkey=8v778vdsle4qi4b8ik17jpq56&dl=0" target="_blank" rel="noopener">latest feedback</a>.
+      </p>
+    </section>
+
+    <footer>
+      <a href="/">Back to Sergey Alexeev</a>
+    </footer>
+  </main>
+</body>
+</html>
