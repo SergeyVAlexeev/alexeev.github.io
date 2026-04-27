@@ -1,0 +1,31 @@
+name: Check links
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          args: >
+            --root-dir "${{ github.workspace }}"
+            --base-url "https://www.alexeev.pw"
+            --verbose
+            --no-progress
+            --max-retries 1
+            --max-concurrency 4
+            --accept "100..=103,200..=299,429"
+            './**/*.html'
+            './**/*.md'
