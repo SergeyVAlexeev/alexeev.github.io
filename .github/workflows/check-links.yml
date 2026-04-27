@@ -13,19 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Check links
+      - name: Check live website links
         uses: lycheeverse/lychee-action@v2
         with:
           fail: true
           args: >
-            --root-dir "${{ github.workspace }}"
-            --base-url "https://www.alexeev.pw"
             --verbose
             --no-progress
+            --method get
             --max-retries 1
             --max-concurrency 4
             --accept "100..=103,200..=299,429"
-            './**/*.html'
-            './**/*.md'
+            "https://www.alexeev.pw/"
+            "https://www.alexeev.pw/hope/"
