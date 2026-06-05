@@ -1,0 +1,692 @@
+﻿{
+    "status":  "ok",
+    "message-type":  "work",
+    "message-version":  "1.0.0",
+    "message":  {
+                    "indexed":  {
+                                    "date-parts":  [
+                                                       [
+                                                           2026,
+                                                           6,
+                                                           4
+                                                       ]
+                                                   ],
+                                    "date-time":  "2026-06-04T10:02:58Z",
+                                    "timestamp":  1780567378896,
+                                    "version":  "3.54.1"
+                                },
+                    "reference-count":  73,
+                    "publisher":  "Wiley",
+                    "issue":  "13-14",
+                    "license":  [
+                                    {
+                                        "start":  {
+                                                      "date-parts":  [
+                                                                         [
+                                                                             2026,
+                                                                             6,
+                                                                             4
+                                                                         ]
+                                                                     ],
+                                                      "date-time":  "2026-06-04T00:00:00Z",
+                                                      "timestamp":  1780531200000
+                                                  },
+                                        "content-version":  "vor",
+                                        "delay-in-days":  3,
+                                        "URL":  "http://creativecommons.org/licenses/by/4.0/"
+                                    },
+                                    {
+                                        "start":  {
+                                                      "date-parts":  [
+                                                                         [
+                                                                             2026,
+                                                                             6,
+                                                                             1
+                                                                         ]
+                                                                     ],
+                                                      "date-time":  "2026-06-01T00:00:00Z",
+                                                      "timestamp":  1780272000000
+                                                  },
+                                        "content-version":  "tdm",
+                                        "delay-in-days":  0,
+                                        "URL":  "http://doi.wiley.com/10.1002/tdm_license_1.1"
+                                    }
+                                ],
+                    "content-domain":  {
+                                           "domain":  [
+                                                          "onlinelibrary.wiley.com"
+                                                      ],
+                                           "crossmark-restriction":  true
+                                       },
+                    "short-container-title":  [
+                                                  "Statistics in Medicine"
+                                              ],
+                    "published-print":  {
+                                            "date-parts":  [
+                                                               [
+                                                                   2026,
+                                                                   6
+                                                               ]
+                                                           ]
+                                        },
+                    "abstract":  "\u003cjats:title\u003eABSTRACT\u003c/jats:title\u003e\n                  \u003cjats:p\u003eWe show that cluster‐randomized trials—especially pragmatic designs—often exhibit substantial (but underappreciated in practice) heterogeneity in cluster sizes and structures, distorting inference. Our simulations—reassigning treatment in real data and varying imbalance in synthetic data—show that currently recommended methods (such as targeted maximum likelihood estimation and small‐sample corrected generalized estimating equations) are not optimized to this challenge. We propose the CARE (Clarify, Apply, Refine, Evaluate) protocol, which anchors inference in a design‐based benchmark and provides a principled pathway for incorporating assumption‐rich methods—making trial analysis more credible, transparent, and directly comparable across studies.\u003c/jats:p\u003e",
+                    "DOI":  "10.1002/sim.70610",
+                    "type":  "journal-article",
+                    "created":  {
+                                    "date-parts":  [
+                                                       [
+                                                           2026,
+                                                           6,
+                                                           4
+                                                       ]
+                                                   ],
+                                    "date-time":  "2026-06-04T09:19:19Z",
+                                    "timestamp":  1780564759000
+                                },
+                    "update-policy":  "https://doi.org/10.1002/crossmark_policy",
+                    "source":  "Crossref",
+                    "is-referenced-by-count":  0,
+                    "title":  [
+                                  "Cluster Trials Inference With\n                    \u003cscp\u003eCARE\u003c/scp\u003e"
+                              ],
+                    "prefix":  "10.1002",
+                    "volume":  "45",
+                    "author":  [
+                                   {
+                                       "ORCID":  "https://orcid.org/0000-0003-2413-2115",
+                                       "authenticated-orcid":  false,
+                                       "given":  "Sergey",
+                                       "family":  "Alexeev",
+                                       "sequence":  "first",
+                                       "affiliation":  [
+                                                           {
+                                                               "name":  "Nura Gili: Centre for Indigenous Programs, Co‐Design Health Research and Innovation Team University of New South Wales  Kensington New South Wales Australia"
+                                                           },
+                                                           {
+                                                               "name":  "NHMRC Clinical Trials Centre, Faculty of Medicine and Health The University of Sydney  Camperdown New South Wales Australia"
+                                                           }
+                                                       ],
+                                       "role":  [
+                                                    {
+                                                        "vocabulary":  "crossref",
+                                                        "role":  "author"
+                                                    }
+                                                ]
+                                   },
+                                   {
+                                       "ORCID":  "https://orcid.org/0000-0001-7834-0572",
+                                       "authenticated-orcid":  false,
+                                       "given":  "Rachael L.",
+                                       "family":  "Morton",
+                                       "sequence":  "additional",
+                                       "affiliation":  [
+                                                           {
+                                                               "name":  "NHMRC Clinical Trials Centre, Faculty of Medicine and Health The University of Sydney  Camperdown New South Wales Australia"
+                                                           }
+                                                       ],
+                                       "role":  [
+                                                    {
+                                                        "vocabulary":  "crossref",
+                                                        "role":  "author"
+                                                    }
+                                                ]
+                                   }
+                               ],
+                    "member":  "311",
+                    "published-online":  {
+                                             "date-parts":  [
+                                                                [
+                                                                    2026,
+                                                                    6,
+                                                                    4
+                                                                ]
+                                                            ]
+                                         },
+                    "reference":  [
+                                      {
+                                          "key":  "e_1_2_10_2_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1136/bmj.d5886"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_3_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/s13063‐016‐1571‐2"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_4_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.ypmed.2018.03.010"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_5_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/s13063‐022‐06025‐1"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_6_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1002/sim.9813"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_7_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1136/bmj.a2390"
+                                      },
+                                      {
+                                          "issue":  "4",
+                                          "key":  "e_1_2_10_8_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "first-page":  "817",
+                                          "DOI":  "10.2307/1912934",
+                                          "article-title":  "A Heteroskedasticity‐Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity",
+                                          "volume":  "48",
+                                          "author":  "White H.",
+                                          "year":  "1980",
+                                          "journal-title":  "Econometrica"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_9_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1093/biomet/73.1.13"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_10_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1080/03610918808812718"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_11_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1080/03610929008830234"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_12_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1080/03610919408813167"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_13_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1111/j.0006‐341X.2001.00126.x"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_14_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1002/jae.3110"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_15_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1080/07474938.2025.2515161"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_16_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.jeconom.2022.04.001"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_17_1",
+                                          "volume-title":  "Handbook of Empirical Economics and Finance",
+                                          "author":  "Cameron A. C.",
+                                          "year":  "2010"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_18_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.3368/jhr.50.2.317"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_19_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1177/1536867X231212433"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_20_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1177/09622802241254197"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_21_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1136/bmj.e5661"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_22_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1002/sim.6106"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_23_1",
+                                          "volume-title":  "A Theory of Data",
+                                          "author":  "Coombs C. H.",
+                                          "year":  "1964"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_24_1",
+                                          "volume-title":  "Partial Identification of Probability Distributions. Springer Series in Statistics",
+                                          "author":  "Manski C. F.",
+                                          "year":  "2003"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_25_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.amepre.2021.01.041"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_26_1",
+                                          "first-page":  "1",
+                                          "volume-title":  "R Package Version",
+                                          "author":  "Højsgaard S.",
+                                          "year":  "2022"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_27_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.18637/jss.v057.c01"
+                                      },
+                                      {
+                                          "issue":  "3",
+                                          "key":  "e_1_2_10_28_1",
+                                          "first-page":  "308",
+                                          "article-title":  "Sensitivity Analyses Would Help",
+                                          "volume":  "75",
+                                          "author":  "Leamer E. E.",
+                                          "year":  "1985",
+                                          "journal-title":  "American Economic Review"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_29_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1257/aer.112.6.1773"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_30_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.3982/ECTA21204"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_31_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1161/CIRCULATIONAHA.123.064645"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_32_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1001/jamahealthforum.2021.4335"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_33_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1111/spc3.70042"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_34_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1177/1745691617751884"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_35_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1556/2006.2023.00052"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_36_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "first-page":  "437",
+                                          "DOI":  "10.1007/978-1-4614-1653-1_17",
+                                          "volume-title":  "Recent Advances and Future Directions in Causality, Prediction, and Specification Analysis: Essays in Honor of Halbert L. White Jr",
+                                          "author":  "MacKinnon J. G.",
+                                          "year":  "2013"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_37_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1111/1467‐9531.00117"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_38_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/S0304‐4076(98)00033‐5"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_39_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1007/s10258‐021‐00203‐w"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_40_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/s12874‐018‐0519‐5"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_41_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/1471‐2288‐3‐21"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_42_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1093/aje/kwh090"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_43_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.3982/ECTA15404"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_44_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "DOI":  "10.1515/9781400829828",
+                                          "volume-title":  "Mostly Harmless Econometrics: An Empiricist\u0027s Companion",
+                                          "author":  "Angrist J. D.",
+                                          "year":  "2009"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_45_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1093/qje/qjy029"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_46_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "unstructured":  "X.Fang X.Wang P. J.Heagerty B.Wang andF.Li “Model‐Robust Standardization in Stepped Wedge Designs ”arXiv Preprint arXiv:2507.17190 (2025) https://arxiv.org/abs/2507.17190.",
+                                          "DOI":  "10.1093/jrsssa/qnag056"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_47_1",
+                                          "unstructured":  "L.Lin F.Su W.Mou P.Ding andM.Wainwright “When Is It Worthwhile to Jackknife? Breaking the Quadratic Barrier for Z‐Estimators ”arXiv Preprint arXiv:2411.02909 (2024) https://arxiv.org/abs/2411.02909."
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_48_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1111/ectj.12107"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_49_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1002/jae.2969"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_50_1",
+                                          "volume-title":  "Chapman \u0026 Hall/CRC Biostatistics Series",
+                                          "author":  "Hayes R.",
+                                          "year":  "2017"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_51_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "DOI":  "10.1201/9781420035285",
+                                          "volume-title":  "Generalized Estimating Equations",
+                                          "author":  "Hardin J.",
+                                          "year":  "2002"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_52_1",
+                                          "volume-title":  "Wiley Series in Probability and Statistics",
+                                          "author":  "Demidenko E.",
+                                          "year":  "2013"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_53_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/s12874‐017‐0442‐1"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_54_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1093/biomet/43.3‐4.353"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_55_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1214/aoms/1177706647"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_56_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1146/annurev.economics.050708.143401"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_57_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1186/s12966‐018‐0727‐8"
+                                      },
+                                      {
+                                          "issue":  "3",
+                                          "key":  "e_1_2_10_58_1",
+                                          "first-page":  "379",
+                                          "article-title":  "Influential Observations, High Leverage Points, and Outliers in Linear Regression",
+                                          "volume":  "1",
+                                          "author":  "Chatterjee S.",
+                                          "year":  "1986",
+                                          "journal-title":  "Statistical Science"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_59_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1136/bmjopen‐2013‐004135"
+                                      },
+                                      {
+                                          "issue":  "1",
+                                          "key":  "e_1_2_10_60_1",
+                                          "doi-asserted-by":  "crossref",
+                                          "first-page":  "249",
+                                          "DOI":  "10.1162/003355304772839588",
+                                          "article-title":  "How Much Should We Trust Differences‐In‐Differences Estimates?",
+                                          "volume":  "119",
+                                          "author":  "Bertrand M.",
+                                          "year":  "2004",
+                                          "journal-title":  "Quarterly Journal of Economics"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_61_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1177/1536867X20909691"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_62_1",
+                                          "unstructured":  "W.Gould B.Poi andV.Wiggins “Why Does Xtgee Sometimes Report That Convergence Was Not Achieved?”Stata FAQ (2024) https://www.stata.com/support/faqs/statistics/xtgee‐convergence‐not‐achieved/."
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_63_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1001/jamainternmed.2021.7556"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_64_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1371/journal.pmed.1004112"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_65_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1136/bmjopen‐2017‐017151"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_66_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1177/1536867X20931001"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_67_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1111/j.0006‐341X.2001.01198.x"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_68_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1198/016214501753382309"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_69_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1002/bimj.200390021"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_70_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.conctc.2020.100605"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_71_1",
+                                          "volume-title":  "Use of Bayesian Methodology in Clinical Trials for Drugs and Biological Products. Draft Guidance for Industry",
+                                          "author":  "U.S. Food and Drug Administration",
+                                          "year":  "2026"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_72_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1093/ectj/utac017"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_73_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.jeconom.2021.03.014"
+                                      },
+                                      {
+                                          "key":  "e_1_2_10_74_1",
+                                          "doi-asserted-by":  "publisher",
+                                          "DOI":  "10.1016/j.jeconom.2020.12.001"
+                                      }
+                                  ],
+                    "container-title":  [
+                                            "Statistics in Medicine"
+                                        ],
+                    "original-title":  [
+
+                                       ],
+                    "language":  "en",
+                    "link":  [
+                                 {
+                                     "URL":  "https://onlinelibrary.wiley.com/doi/pdf/10.1002/sim.70610",
+                                     "content-type":  "application/pdf",
+                                     "content-version":  "vor",
+                                     "intended-application":  "text-mining"
+                                 },
+                                 {
+                                     "URL":  "https://onlinelibrary.wiley.com/doi/full-xml/10.1002/sim.70610",
+                                     "content-type":  "application/xml",
+                                     "content-version":  "vor",
+                                     "intended-application":  "text-mining"
+                                 },
+                                 {
+                                     "URL":  "https://onlinelibrary.wiley.com/doi/pdf/10.1002/sim.70610",
+                                     "content-type":  "unspecified",
+                                     "content-version":  "vor",
+                                     "intended-application":  "similarity-checking"
+                                 }
+                             ],
+                    "deposited":  {
+                                      "date-parts":  [
+                                                         [
+                                                             2026,
+                                                             6,
+                                                             4
+                                                         ]
+                                                     ],
+                                      "date-time":  "2026-06-04T09:19:25Z",
+                                      "timestamp":  1780564765000
+                                  },
+                    "score":  1,
+                    "resource":  {
+                                     "primary":  {
+                                                     "URL":  "https://onlinelibrary.wiley.com/doi/10.1002/sim.70610"
+                                                 }
+                                 },
+                    "subtitle":  [
+
+                                 ],
+                    "short-title":  [
+
+                                    ],
+                    "issued":  {
+                                   "date-parts":  [
+                                                      [
+                                                          2026,
+                                                          6
+                                                      ]
+                                                  ]
+                               },
+                    "references-count":  73,
+                    "journal-issue":  {
+                                          "issue":  "13-14",
+                                          "published-print":  {
+                                                                  "date-parts":  [
+                                                                                     [
+                                                                                         2026,
+                                                                                         6
+                                                                                     ]
+                                                                                 ]
+                                                              }
+                                      },
+                    "alternative-id":  [
+                                           "10.1002/sim.70610"
+                                       ],
+                    "URL":  "https://doi.org/10.1002/sim.70610",
+                    "archive":  [
+                                    "Portico"
+                                ],
+                    "relation":  {
+
+                                 },
+                    "ISSN":  [
+                                 "0277-6715",
+                                 "1097-0258"
+                             ],
+                    "issn-type":  [
+                                      {
+                                          "value":  "0277-6715",
+                                          "type":  "print"
+                                      },
+                                      {
+                                          "value":  "1097-0258",
+                                          "type":  "electronic"
+                                      }
+                                  ],
+                    "subject":  [
+
+                                ],
+                    "published":  {
+                                      "date-parts":  [
+                                                         [
+                                                             2026,
+                                                             6
+                                                         ]
+                                                     ]
+                                  },
+                    "assertion":  [
+                                      {
+                                          "value":  "2025-11-17",
+                                          "order":  0,
+                                          "name":  "received",
+                                          "label":  "Received",
+                                          "group":  {
+                                                        "name":  "publication_history",
+                                                        "label":  "Publication History"
+                                                    }
+                                      },
+                                      {
+                                          "value":  "2026-05-11",
+                                          "order":  2,
+                                          "name":  "accepted",
+                                          "label":  "Accepted",
+                                          "group":  {
+                                                        "name":  "publication_history",
+                                                        "label":  "Publication History"
+                                                    }
+                                      },
+                                      {
+                                          "value":  "2026-06-04",
+                                          "order":  3,
+                                          "name":  "published",
+                                          "label":  "Published",
+                                          "group":  {
+                                                        "name":  "publication_history",
+                                                        "label":  "Publication History"
+                                                    }
+                                      }
+                                  ],
+                    "article-number":  "e70610"
+                }
+}
