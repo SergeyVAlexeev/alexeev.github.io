@@ -386,15 +386,15 @@
 
     /* ── Team grid ── */
     .team-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--rule);
-      border: 1px solid var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
       margin-top: 28px;
     }
     .team-cell {
+      flex: 1 1 240px;
       background: var(--bg);
+      border: 1px solid var(--rule);
       padding: 16px 16px;
     }
     .team-name {
@@ -427,14 +427,13 @@
       .stat:nth-child(2) { border-right: none; }
       .stat:nth-child(1),
       .stat:nth-child(2) { border-bottom: 1px solid var(--rule); }
-      .team-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 720px) {
       .stats { grid-template-columns: repeat(2, 1fr); }
       .stat { border-bottom: 1px solid var(--rule); }
       .partner-grid { grid-template-columns: 1fr; }
       .design-grid { grid-template-columns: 1fr; }
-      .team-grid { grid-template-columns: 1fr; }
+      .team-cell { flex-basis: 100%; }
       .value-list li { grid-template-columns: 1fr; gap: 4px; }
       .hero { padding: 36px 20px 36px; }
       section { padding: 36px 20px; }
@@ -644,18 +643,18 @@
       </div>
       <div class="team-cell">
         <p class="team-name">Jesse Young</p>
-        <p class="team-affil">University of Toronto</p>
+        <p class="team-affil">University of Toronto · University of Melbourne</p>
         <p class="team-role">Psychiatric epidemiology, justice health, data-linkage methodology</p>
+      </div>
+      <div class="team-cell">
+        <p class="team-name">Ania Samarawickrama Lucewicz</p>
+        <p class="team-affil">University of Sydney</p>
+        <p class="team-role">General practitioner, FRACGP; adolescent primary care, linked health data, whole-of-family models of care.</p>
       </div>
     </div>
 
     <p class="design-cell-label" style="margin-top: 28px;">Associate Investigators</p>
     <div class="team-grid">
-      <div class="team-cell">
-        <p class="team-name">Ania Sams</p>
-        <p class="team-affil">University of Sydney</p>
-        <p class="team-role">General practitioner; adolescent primary care, linked health data, whole-of-family models of care.</p>
-      </div>
       <div class="team-cell">
         <p class="team-name">Carly Johnco</p>
         <p class="team-affil">Macquarie University</p>
