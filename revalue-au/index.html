@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>REVALUE-AU — Revaluing Work and Evaluating Labour-market Adjustment in Australia</title>
+  <meta name="description" content="REVALUE-AU studies what happens after Australian tribunals re-price work in care and community sectors: how legal revaluation reaches wages, hours, employment, retention, mobility, employers, funders and service delivery." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --fg: #f0eee9;
+      --muted: #aaa8a3;
+      --rule: #2b2a29;
+      --soft: #151514;
+      --accent: #e7a86e;
+      --max: 880px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+    body { font: 16px/1.65 ui-serif, Georgia, "Times New Roman", Times, serif; }
+    a { color: var(--accent); }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    .topnav {
+      max-width: var(--max); margin: 0 auto; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .site-link { color: var(--muted); text-decoration: none; font-size: 14px; }
+    .site-link:hover { color: var(--accent); text-decoration: underline; }
+    .status-pill {
+      color: var(--muted); border: 1px solid var(--rule); border-radius: 999px;
+      padding: 3px 11px; font-size: 13px; white-space: nowrap;
+    }
+
+    .hero { max-width: var(--max); margin: 0 auto; padding: 62px 24px 50px; border-bottom: 1px solid var(--rule); }
+    .hero-label, .section-label {
+      color: var(--muted); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .hero-label { margin: 0 0 18px; }
+    h1 { margin: 0; font-size: clamp(55px, 12vw, 116px); line-height: .88; letter-spacing: -.055em; }
+    .hero-full { max-width: 730px; margin: 20px 0 0; color: var(--muted); font-size: clamp(19px, 3vw, 27px); font-style: italic; line-height: 1.25; }
+    .hero-standfirst { max-width: 700px; margin: 24px 0 0; font-size: 19px; line-height: 1.55; }
+    .hero-standfirst em { color: var(--accent); font-style: normal; }
+    .hero-actions, .cta-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px;
+      border: 1px solid var(--fg); background: transparent; color: var(--fg); text-decoration: none;
+      font: 600 13px/1.2 inherit; letter-spacing: .07em; text-transform: uppercase;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-primary { background: var(--fg); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .hero-note, .callout {
+      background: var(--soft); border-left: 3px solid var(--accent); padding: 15px 18px;
+    }
+    .hero-note { max-width: 700px; margin: 25px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    .stats-wrap { border-bottom: 1px solid var(--rule); border-top: 1px solid var(--rule); }
+    .stats { max-width: var(--max); margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); }
+    .stat { min-width: 0; padding: 28px 20px 28px 0; border-right: 1px solid var(--rule); }
+    .stat + .stat { padding-left: 20px; }
+    .stat:last-child { border-right: 0; }
+    .stat-num { display: block; font-size: clamp(25px, 4vw, 42px); font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+    .stat-label { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    section { max-width: var(--max); margin: 0 auto; padding: 56px 24px; border-bottom: 1px solid var(--rule); }
+    .section-label { margin: 0 0 20px; }
+    h2 { margin: 0 0 18px; font-size: clamp(27px, 4vw, 39px); line-height: 1.08; letter-spacing: -.025em; }
+    h3 { margin: 0 0 8px; font-size: 19px; line-height: 1.2; }
+    p { margin: 12px 0; }
+    .muted { color: var(--muted); }
+    .callout { margin: 25px 0; font-size: 17px; line-height: 1.5; }
+    .callout strong { color: var(--fg); }
+
+    .design-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin-top: 30px; background: var(--rule); border: 1px solid var(--rule); }
+    .design-cell { min-height: 170px; padding: 22px 20px; background: var(--bg); }
+    .design-cell-label { margin-bottom: 10px; color: var(--accent); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+    .design-cell p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+    .timeline { margin: 28px 0 0; border-top: 1px solid var(--rule); }
+    .timeline-row { display: grid; grid-template-columns: 150px 1fr; gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+    .timeline-date { color: var(--accent); font-size: 13px; letter-spacing: .05em; }
+    .timeline-text { color: var(--muted); font-size: 15px; }
+    .timeline-text strong { color: var(--fg); }
+
+    .evidence-box { margin-top: 28px; padding: 24px; border: 1px solid var(--rule); }
+    .evidence-box .number { display: block; margin-bottom: 10px; color: var(--accent); font-size: 34px; font-weight: 700; line-height: 1; }
+    .evidence-box p { margin: 0; color: var(--muted); }
+    .value-list { margin: 25px 0 0; padding: 0; list-style: none; }
+    .value-list li { display: grid; grid-template-columns: 190px 1fr; gap: 22px; padding: 15px 0; border-top: 1px solid var(--rule); }
+    .value-list li:last-child { border-bottom: 1px solid var(--rule); }
+    .value-key { font-weight: 700; }
+    .value-desc { color: var(--muted); }
+
+    .partner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 28px; }
+    .partner-card { padding: 21px 19px; border: 1px solid var(--rule); }
+    .partner-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    .cta-section { max-width: none; background: var(--fg); color: var(--bg); border-bottom: 0; }
+    .cta-inner { max-width: var(--max); margin: 0 auto; }
+    .cta-section h2 { color: var(--bg); }
+    .cta-section p { max-width: 650px; color: #55524d; font-size: 17px; }
+    .btn-cta { border-color: var(--bg); color: var(--bg); }
+    .btn-cta:hover { border-color: var(--bg); background: rgba(0,0,0,.08); color: var(--bg); }
+    .btn-cta-primary { background: var(--bg); color: var(--fg); }
+    .btn-cta-primary:hover { background: #282725; border-color: #282725; color: var(--fg); }
+
+    footer { max-width: var(--max); margin: 0 auto; padding: 28px 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: 13px; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); text-decoration: underline; }
+
+    @media (max-width: 720px) {
+      .hero { padding: 40px 20px 38px; }
+      section { padding: 40px 20px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2) { border-right: 0; }
+      .stat:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+      .stat:nth-child(3) { padding-left: 0; }
+      .design-grid, .partner-grid { grid-template-columns: 1fr; }
+      .timeline-row, .value-list li { grid-template-columns: 1fr; gap: 4px; }
+    }
+    @media (max-width: 480px) {
+      .topnav { align-items: flex-start; }
+      .status-pill { white-space: normal; text-align: right; }
+      .stats { padding: 0 20px; }
+      .stat { padding-right: 12px; }
+      .stat + .stat { padding-left: 12px; }
+      .btn { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Site navigation">
+    <a class="site-link" href="/">alexeev.pw</a>
+    <span class="status-pill">Seeking partners · 2026</span>
+  </nav>
+
+  <header class="hero">
+    <p class="hero-label">ARC research programme · development in progress</p>
+    <h1>REVALUE-AU</h1>
+    <p class="hero-full">Revaluing Work and Evaluating Labour-market Adjustment in Australia</p>
+    <p class="hero-standfirst"><em>When the law re-prices work, what does the labour market do?</em> REVALUE-AU will study what happens after tribunals recognise that care and community work has been undervalued — from wages and hours to retention, mobility, employers, funders and service delivery.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="mailto:sergey.alexeev@sydney.edu.au?subject=REVALUE-AU%20project">Get in touch ↗</a>
+      <a class="btn" href="https://www.dropbox.com/scl/fi/rs163f86ct7klmjwd6ruo/REVALUE_AU_Discovery_conversation_one_pager.pdf?rlkey=saneiunewm6csrsow3m4pdas3&amp;dl=0" target="_blank" rel="noopener">Read the one-pager ↗</a>
+      <a class="btn" href="#pilot">Pilot evidence ↓</a>
+      <a class="btn" href="#programme">Project spine ↓</a>
+    </div>
+    <p class="hero-note">The programme is in development. The one-pager is a discussion document; prospective data, partner pathways and the final grant scheme remain subject to design, access and approvals.</p>
+  </header>
+
+  <div class="stats-wrap" aria-label="Project at a glance">
+    <div class="stats">
+      <div class="stat"><span class="stat-num">2001–2024</span><span class="stat-label">HILDA waves available for the pilot</span></div>
+      <div class="stat"><span class="stat-num">2012–2020</span><span class="stat-label">SACS implementation sequence</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">layers: legal, implemented, realised</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">linked legal-economic evidence platform</span></div>
+    </div>
+  </div>
+
+  <main>
+    <section id="problem">
+      <p class="section-label">The problem</p>
+      <h2>A tribunal can re-set the value of work. It cannot dictate what follows.</h2>
+      <p>Australian wage-setting decisions have recognised that feminised care and community work was historically undervalued. The legal record is detailed. The labour-market record — what changed for workers, employers, funders and services afterwards — is much harder to see.</p>
+      <div class="callout"><strong>The central gap:</strong> a wage order is a legal event. Its consequences are an economic and institutional sequence.</div>
+      <p class="muted">Common surveys can show wages, hours and employment, but they do not directly observe award coverage, classifications, pay points, over-award margins, funding exposure or whether an employer absorbed, passed on or resisted a new wage floor. REVALUE-AU makes those connections explicit.</p>
+    </section>
+
+    <section id="programme">
+      <p class="section-label">The programme spine</p>
+      <h2>An evidence platform, not a catalogue of wage cases.</h2>
+      <p>Each institutional intervention is treated as a traceable sequence: what was decided, who was exposed, when the change became operative, and which outcomes could plausibly move next.</p>
+      <div class="design-grid">
+        <div class="design-cell"><div class="design-cell-label">01 · Legal event</div><p>Build a verified record of decisions, coverage, quantum, staging, operative dates and the mechanism of change.</p></div>
+        <div class="design-cell"><div class="design-cell-label">02 · Implemented treatment</div><p>Translate legal language into transparent exposure measures for workers, occupations, sectors, employers and funders.</p></div>
+        <div class="design-cell"><div class="design-cell-label">03 · Realised adjustment</div><p>Track wages, hours, employment, retention, mobility and the organisational responses around a re-priced job.</p></div>
+        <div class="design-cell"><div class="design-cell-label">04 · Service consequences</div><p>Ask whether changes in labour costs and workforce stability alter capacity, quality, access and the distribution of care.</p></div>
+      </div>
+      <div class="timeline" aria-label="Illustrative institutional sequence">
+        <div class="timeline-row"><div class="timeline-date">2012–2020</div><div class="timeline-text"><strong>Social and Community Services (SACS)</strong> — the pilot sequence for linking revaluation, implementation and workforce adjustment.</div></div>
+        <div class="timeline-row"><div class="timeline-date">2005–2009</div><div class="timeline-text"><strong>Queensland pay-equity matters</strong> — a complementary institutional pathway with different timing and coverage.</div></div>
+        <div class="timeline-row"><div class="timeline-date">2022 onward</div><div class="timeline-text"><strong>Aged care and contemporary priority awards</strong> — later cases that make implementation, funding and service effects especially visible.</div></div>
+      </div>
+    </section>
+
+    <section id="pilot">
+      <p class="section-label">Pilot evidence</p>
+      <h2>The pilot changes the question from “did wages rise?” to “what can these data establish?”</h2>
+      <p>The initial HILDA-based study uses the SACS sequence to test the measurement and design problem before the broader platform is built. It is deliberately cautious: the pilot is a feasibility and evidence-mapping exercise, not a claim that one observational estimate settles the causal question.</p>
+      <div class="evidence-box">
+        <span class="number">0.014 log points</span>
+        <p>The pooled wage estimate in the current pilot draft, with a 95% confidence interval of approximately −0.047 to 0.076. The lesson is about detectable effect size, exposure measurement and comparator design — not a clean “no effect” conclusion.</p>
+      </div>
+      <ul class="value-list">
+        <li><span class="value-key">Wages</span><span class="value-desc">Estimate the overall wage signal while showing how broad treatment definitions can dilute exposure.</span></li>
+        <li><span class="value-key">Hours and work status</span><span class="value-desc">Examine whether adjustment appears through hours, part-time work, employment or job transitions.</span></li>
+        <li><span class="value-key">Design discipline</span><span class="value-desc">Separate legal timing from implemented exposure and keep uncertainty visible at every stage.</span></li>
+      </ul>
+    </section>
+
+    <section id="data">
+      <p class="section-label">Data architecture</p>
+      <h2>Start with what is available. Design towards what would sharpen the evidence.</h2>
+      <p>REVALUE-AU is designed as a staged data strategy. It can begin with transparent public and survey evidence, while building the relationships and specifications needed for stronger administrative and sector-level analyses.</p>
+      <div class="partner-grid">
+        <div class="partner-card"><h3>HILDA</h3><p>Worker-level wages, hours, employment and transitions for the pilot and design diagnostics.</p></div>
+        <div class="partner-card"><h3>Legal-economic platform</h3><p>Structured decisions, occupations, awards, implementation dates, quantum and institutional mechanisms.</p></div>
+        <div class="partner-card"><h3>PLIDA and LFS</h3><p>Prospective pathways to improve worker, employer and labour-market exposure measurement.</p></div>
+        <div class="partner-card"><h3>STP and sector data</h3><p>Potentially sharper evidence on payroll adjustment, workforce stability, funding and service delivery.</p></div>
+      </div>
+    </section>
+
+    <section id="partners">
+      <p class="section-label">Partner opportunities</p>
+      <h2>Better evidence on what wage correction does once it enters the workplace.</h2>
+      <p>Partners can help identify the implementation details that broad surveys miss — and help shape outputs that are useful to people making decisions about work, funding and care.</p>
+      <div class="partner-grid">
+        <div class="partner-card"><h3>Policy and legal institutions</h3><p>Help interpret decisions, timing, coverage and the practical meaning of a revaluation event.</p></div>
+        <div class="partner-card"><h3>Employers and sector bodies</h3><p>Clarify implementation, workforce responses, recruitment constraints and service pressures.</p></div>
+        <div class="partner-card"><h3>Funders and commissioners</h3><p>Connect wage correction to funding design, pass-through, capacity and quality.</p></div>
+        <div class="partner-card"><h3>Data and research partners</h3><p>Build the linked evidence needed to distinguish legal recognition from realised adjustment.</p></div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-inner">
+        <p class="section-label">A project to build together</p>
+        <h2>What happens after work is revalued?</h2>
+        <p>Read the discussion one-pager, or get in touch if your organisation can help make the legal, economic and service-delivery sequence visible.</p>
+        <div class="cta-actions">
+          <a class="btn btn-cta-primary" href="https://www.dropbox.com/scl/fi/rs163f86ct7klmjwd6ruo/REVALUE_AU_Discovery_conversation_one_pager.pdf?rlkey=saneiunewm6csrsow3m4pdas3&amp;dl=0" target="_blank" rel="noopener">Read the one-pager ↗</a>
+          <a class="btn btn-cta" href="mailto:sergey.alexeev@sydney.edu.au?subject=REVALUE-AU%20project">Discuss the project ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>REVALUE-AU · Revaluing Work and Evaluating Labour-market Adjustment in Australia</span>
+    <a href="/">alexeev.pw</a>
+  </footer>
+</body>
+</html>
