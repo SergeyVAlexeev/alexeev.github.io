@@ -1,0 +1,72 @@
+name: Reorder homepage once
+
+on:
+  push:
+    paths:
+      - '.github/workflows/reorder-homepage-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  reorder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Move Publications before Collaboration
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          nav_old = '''    <a href="#about">About <span>↵</span></a>
+              <a href="#collaboration">Collaboration <span>↵</span></a>
+              <a href="#publications">Publications <span>↵</span></a>
+          '''
+          nav_new = '''    <a href="#about">About <span>↵</span></a>
+              <a href="#publications">Publications <span>↵</span></a>
+              <a href="#collaboration">Collaboration <span>↵</span></a>
+          '''
+
+          assert nav_old in text
+          assert text.count(nav_old) == 1
+          text = text.replace(nav_old, nav_new, 1)
+
+          collaboration_start = text.index('<section id="collaboration">')
+          publications_start = text.rindex('<section id="publications">')
+          consulting_start = text.index('<section id="consulting">', publications_start)
+          assert collaboration_start < publications_start < consulting_start
+
+          publications_block = text[publications_start:consulting_start]
+          assert publications_block.count('<section id="publications">') == 1
+          assert '<h2>Publications</h2>' in publications_block
+          assert 'Journal articles &amp; related media coverage' in publications_block
+
+          without_publications = text[:publications_start] + text[consulting_start:]
+          new_collaboration_start = without_publications.index('<section id="collaboration">')
+          updated = without_publications[:new_collaboration_start] + publications_block + without_publications[new_collaboration_start:]
+
+          assert updated.index('<section id="about">') < updated.rindex('<section id="publications">') < updated.index('<section id="collaboration">') < updated.index('<section id="consulting">')
+          assert updated.count(publications_block) == 1
+          assert updated.count('<section id="collaboration">') == text.count('<section id="collaboration">')
+          assert updated.count('<section id="publications">') == text.count('<section id="publications">')
+
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Verify and commit
+        shell: bash
+        run: |
+          git diff --check
+          test "$(git diff --name-only)" = "index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Move Publications before Collaboration"
+          git push origin HEAD:main
