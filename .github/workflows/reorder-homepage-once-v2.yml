@@ -1,0 +1,67 @@
+name: Reorder homepage once v2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/reorder-homepage-once-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  reorder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Reorder visible sections and navigation only
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          collab_nav = '    <a href="#collaboration">Collaboration <span>↵</span></a>'
+          pubs_nav = '    <a href="#publications">Publications <span>↵</span></a>'
+          assert collab_nav in text and pubs_nav in text
+          assert text.index(collab_nav) < text.index(pubs_nav)
+          text = text.replace(collab_nav + '\n' + pubs_nav, pubs_nav + '\n' + collab_nav, 1)
+
+          collab = text.index('<section id="collaboration">')
+          pubs = text.rindex('<section id="publications">')
+          consulting = text.index('<section id="consulting">', pubs)
+          assert collab < pubs < consulting
+
+          pubs_block = text[pubs:consulting]
+          assert '<h2>Publications</h2>' in pubs_block
+          assert 'Journal articles &amp; related media coverage' in pubs_block
+
+          base = text[:pubs] + text[consulting:]
+          insert_at = base.index('<section id="collaboration">')
+          updated = base[:insert_at] + pubs_block + base[insert_at:]
+
+          about_pos = updated.index('<section id="about">')
+          pubs_pos = updated.rindex('<section id="publications">')
+          collab_pos = updated.index('<section id="collaboration">')
+          consulting_pos = updated.index('<section id="consulting">')
+          assert about_pos < pubs_pos < collab_pos < consulting_pos
+          assert updated.count(pubs_block) == 1
+          assert updated.count('<section id="publications">') == text.count('<section id="publications">')
+
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Verify and commit
+        shell: bash
+        run: |
+          git diff --check
+          test "$(git diff --name-only)" = "index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Move Publications before Collaboration"
+          git push origin HEAD:main
