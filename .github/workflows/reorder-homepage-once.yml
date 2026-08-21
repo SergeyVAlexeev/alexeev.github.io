@@ -25,16 +25,8 @@ jobs:
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
 
-          nav_old = '''    <a href="#about">About <span>↵</span></a>
-              <a href="#collaboration">Collaboration <span>↵</span></a>
-              <a href="#publications">Publications <span>↵</span></a>
-          '''
-          nav_new = '''    <a href="#about">About <span>↵</span></a>
-              <a href="#publications">Publications <span>↵</span></a>
-              <a href="#collaboration">Collaboration <span>↵</span></a>
-          '''
-
-          assert nav_old in text
+          nav_old = '    <a href="#collaboration">Collaboration <span>↵</span></a>\n    <a href="#publications">Publications <span>↵</span></a>'
+          nav_new = '    <a href="#publications">Publications <span>↵</span></a>\n    <a href="#collaboration">Collaboration <span>↵</span></a>'
           assert text.count(nav_old) == 1
           text = text.replace(nav_old, nav_new, 1)
 
@@ -49,8 +41,8 @@ jobs:
           assert 'Journal articles &amp; related media coverage' in publications_block
 
           without_publications = text[:publications_start] + text[consulting_start:]
-          new_collaboration_start = without_publications.index('<section id="collaboration">')
-          updated = without_publications[:new_collaboration_start] + publications_block + without_publications[new_collaboration_start:]
+          insert_at = without_publications.index('<section id="collaboration">')
+          updated = without_publications[:insert_at] + publications_block + without_publications[insert_at:]
 
           assert updated.index('<section id="about">') < updated.rindex('<section id="publications">') < updated.index('<section id="collaboration">') < updated.index('<section id="consulting">')
           assert updated.count(publications_block) == 1
