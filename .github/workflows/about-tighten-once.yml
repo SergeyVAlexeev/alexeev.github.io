@@ -1,0 +1,60 @@
+name: Tighten About once
+
+on:
+  push:
+    paths:
+      - '.github/workflows/about-tighten-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-about:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update About text only
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          container_marker = '    <div class="about-text">\n'
+          tip_marker = '        <span class="inline-tip">\n'
+
+          start = text.index(container_marker) + len(container_marker)
+          end = text.index(tip_marker, start)
+          old = text[start:end]
+
+          assert 'I am an economist–statistician specialising in trial-based and quasi-experimental evaluation' in old
+          assert 'Institute for Replication (I4R)' in old
+          assert 'I am currently a Senior Research Associate at UNSW’s Nura Gili Centre for Indigenous Programs' in old
+          assert old.count('<p>') == 2
+
+          new = '''      <p>
+                  I am currently a Senior Research Associate at UNSW’s Nura Gili Centre for Indigenous Programs and an Adjunct Senior Lecturer at the University of Sydney’s NHMRC Clinical Trials Centre. I am also an Associate Editor of the <a href="https://link.springer.com/journal/13033" target="_blank" rel="noopener"><i>International Journal of Mental Health Systems</i></a>, serve on the Editorial Board of the <a href="https://www.sciencedirect.com/journal/international-journal-of-drug-policy/about/editorial-board" target="_blank" rel="noopener"><i>International Journal of Drug Policy</i></a>, and contribute to the <a href="https://onlinelibrary.wiley.com/toc/14657295/2026/64/1" target="_blank" rel="noopener">Institute for Replication (I4R)</a>.
+
+          '''
+
+          updated = text[:start] + new + text[end:]
+          assert updated != text
+          assert updated.count('Institute for Replication (I4R)') == text.count('Institute for Replication (I4R)')
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Verify scope and commit
+        shell: bash
+        run: |
+          git diff --check
+          test "$(git diff --name-only)" = "index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Tighten About section"
+          git push origin HEAD:main
