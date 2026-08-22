@@ -1,32 +1,1781 @@
----
----
-{% capture original %}{% include_relative index-source.html %}{% endcapture %}
 
-{% assign collab_split = original | split: '<section id="collaboration">' %}
-{% assign collab_rest = collab_split[1] %}
-{% assign collab_end_split = collab_rest | split: '</section>' %}
-{% assign collab_inner = collab_end_split[0] %}
-{% capture collab_section %}<section id="collaboration">{{ collab_inner }}</section>{% endcapture %}
-{% assign without_collab = original | remove_first: collab_section %}
-{% assign collab_section = collab_section | replace: '<h2>Collaboration</h2>', '<h2>Collaboration &amp; contact</h2>' %}
 
-{% assign teaching_split = without_collab | split: '<section id="teaching">' %}
-{% assign teaching_rest = teaching_split[1] %}
-{% assign teaching_end_split = teaching_rest | split: '</section>' %}
-{% assign teaching_inner = teaching_end_split[0] %}
-{% capture teaching_section %}<section id="teaching">{{ teaching_inner }}</section>{% endcapture %}
-{% capture teaching_and_collab %}{{ teaching_section }}
 
-{{ collab_section }}{% endcapture %}
-{% assign reordered = without_collab | replace: teaching_section, teaching_and_collab %}
+<!doctype html>
+<html lang="en">
+<head>
 
-{% capture nav_old %}    <a href="#grants">Grants <span>↵</span></a>
+  <!-- Favicons -->
+<!-- Favicons -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- 
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"> -->
+
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sergey Alexeev</title>
+  <meta name="description" content="Sergey Alexeev—health economist, biostatistician, epidemiologist." />
+
+  <style>
+    :root{
+      --bg:#ffffff; --fg:#111111; --muted:#555; --rule:#e6e6e6; --link:#0b57d0;
+      --max: 900px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b0b0c; --fg:#eaeaea; --muted:#b8b8b8; --rule:#232323; --link:#7ab7ff; }
+    }
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--fg);}
+    body{font:16px/1.6 ui-serif, Georgia, "Times New Roman", Times, serif;}
+    a{color:var(--link);}  
+    
+    /* Two-column layout: left nav rail + main content */
+.layout{
+  max-width: calc(var(--max) + 140px); /* 140 ~= nav width + gap; tweak if you want */
+  margin: 0 auto;
+  padding: 56px 20px;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* Main column */
+.wrap{
+  max-width: var(--max);
+  margin: 0;
+  padding: 0;
+}
+
+    header{display:flex; flex-wrap:wrap; gap:18px; align-items:baseline;}
+    h1{margin:0; font-size:42px; letter-spacing:-0.02em;}
+    .sub{color:var(--muted); font-size:18px;}
+    .row{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+    .pill{border:1px solid var(--rule); border-radius:999px; padding:3px 10px; font-size:14px; color:var(--muted);}
+    .pill a{color:var(--link); text-decoration:none;}
+    .pill a:hover{text-decoration:underline;}
+
+    hr{border:none; border-top:1px solid var(--rule); margin:28px 0;}
+
+    /* Section separators (rule above each section heading) */
+    section{margin:0; padding:28px 0;}
+    section#about{padding-top:0;}
+    section + section{border-top:1px solid var(--rule);}
+
+    h2{margin:0 0 10px; font-size:18px; text-transform:uppercase; letter-spacing:0.08em;}
+    p{margin:10px 0;}
+    ul{margin:8px 0 0 18px; padding:0;}
+    li{margin:8px 0;}
+    .meta{color:var(--muted);}
+
+    /* Reduce space under small section headings (collaboration) */
+    section#collaboration h4 { margin: 0 0 6px; }
+    
+
+.sidenav{
+  position: sticky;
+  top: 56px;              /* where it “sticks” */
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidenav a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.sidenav a:hover{
+  color: var(--fg);
+  border-color: var(--link);
+  background: rgba(127,127,127,0.08);
+}
+
+/* Mobile top bar + off-canvas navigation */
+.topbar{
+  display:none;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.topbar-inner{
+  max-width: calc(var(--max) + 140px);
+  margin: 0 auto;
+  padding: 10px 16px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar-title{
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: 16px;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbtn{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.navbtn:hover{
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.nav-scrim{
+  display:none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 250;
+}
+
+.nav-scrim.open{ display:block; }
+
+.nav-close{
+  display:none;
+}
+
+body.nav-open{
+  overflow: hidden;
+}
+
+/* Mobile: single column + hamburger menu */
+@media (max-width: 900px){
+  .topbar{ display:block; }
+  .layout{ display:block; padding:32px 20px; }
+  .wrap{ max-width: var(--max); margin: 0 auto; }
+
+ .sidenav{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(320px, 82vw);
+  padding: 70px 16px 16px;
+  box-sizing: border-box; /* ← ADD THIS LINE */
+  background: var(--bg);
+  border-right: 1px solid var(--rule);
+  box-shadow: 0 12px 34px rgba(0,0,0,.25);
+  transform: translateX(-110%);
+  transition: transform .18s ease;
+  z-index: 400;
+}
+
+  .sidenav.open{ transform: translateX(0); }
+
+  .sidenav a{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .nav-close{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg);
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    cursor: pointer;
+  }
+  .nav-close:hover{ border-color: var(--link); color: var(--link); }
+}
+
+    /* Fedor-style “download” buttons + top statement */
+.kicker{
+  color: var(--muted);
+  margin: 10px 0 14px;
+  font-size: 15px;
+}
+
+.btnbar{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 14px 0 6px;
+}
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.btn:hover{
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.handles{
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 0px;
+}
+
+.handles a{
+  text-decoration: none;
+}
+
+.handles a:hover{
+  text-decoration: underline;
+}
+
+
+/* Publications list: consistent bullet + clean hover card */
+.publist{
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.publist li{
+  position: relative;
+  padding-left: 18px;
+  margin: 6px 0;
+}
+
+.publist li::before{
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  color: var(--muted);
+}
+
+/* Title looks like normal text, but behaves like a link */
+.pub-title{
+  position: relative;
+  display: inline-block;
+  font-weight: 400;
+  color: var(--fg);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pub-title:hover,
+.pub-title:focus{
+  color: var(--link);
+  text-decoration: underline;
+}
+
+.pub-title:focus{
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+/* Hover abstract card */
+.pub-title .abs{
+  position: absolute;
+  /* left: 24px; */
+  left: 90px;
+  bottom: 1.4em;
+  width: min(560px, calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
+  box-sizing: border-box;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 10px 12px;
+
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--muted);
+
+  box-shadow: 0 10px 28px rgba(0,0,0,.22);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity .16s ease, transform .16s ease, visibility .16s;
+  z-index: 60;
+}
+
+.pub-title:hover .abs,
+.pub-title:focus .abs{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+
+/* Inline “heritage” tooltip (hover on desktop, tap/focus on mobile) */
+/* Inline “heritage” info cue (hover on desktop, tap/focus on mobile) */
+.inline-tip{
+  display: inline;
+}
+
+/* Small cue icon; this is the interactive target */
+.inline-tip .info{
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.85em;
+  line-height: 1;
+  vertical-align: text-top;
+  color: var(--muted);
+  cursor: help;
+  user-select: none;
+}
+
+.inline-tip .info:hover{
+  color: var(--link);
+}
+
+.inline-tip .info:focus{
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 6px;
+  color: var(--link);
+}
+
+/* The hover panel */
+.inline-tip .info .tip{
+  position: absolute;
+  left: 0;
+  top: 1.6em;
+  width: min(520px, calc(100vw - 40px));
+  max-width: calc(100vw - 40px);
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 10px 12px;
+
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--muted);
+
+  box-shadow: 0 10px 28px rgba(0,0,0,.22);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity .14s ease, transform .14s ease, visibility .14s;
+  z-index: 80;
+}
+
+.inline-tip .info .tip a{
+  color: var(--link);
+  text-decoration: none;
+}
+
+.inline-tip .info .tip a:hover{
+  text-decoration: underline;
+}
+
+.inline-tip .info .tip .tip-more{
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+
+.inline-tip .info:hover .tip,
+.inline-tip .info:focus .tip{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Tighter tooltip styling inside publication link lines */
+.pub-links .inline-tip .info{
+  margin-left: 4px;
+  vertical-align: baseline;
+}
+
+.pub-links .inline-tip .info .tip{
+  left: 0;
+  right: auto;
+  top: 1.5em;
+  width: min(320px, calc(100vw - 40px));
+}
+
+.pub-meta{
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.pub-links{
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.pub-links a{
+  color: var(--link);
+  text-decoration: none;
+}
+
+.pub-links a:hover{
+  text-decoration: underline;
+}
+
+/* Make non-title publication listings non-bold */
+.pub-main{font-weight:400}
+
+    
+/* About: image + text side-by-side */
+.about-row{display:flex; flex-direction:column; gap:14px; align-items:flex-start;}
+
+/* Nudge photo down slightly */
+.about-pic{width:300px; height:auto; border-radius:6px; flex-shrink:0; margin-top:0; order:1;}
+
+/* About text: no vertical divider */
+.about-text{min-width:0; padding:0; order:2;}
+
+/* About handles: no horizontal rule */
+.about-handles{margin-top:14px; padding-top:0; border-top:none;}
+
+
+
+@media (max-width:640px){
+  .about-row{flex-direction:column;}
+  .about-pic{width:100%; max-width:280px; margin-top:0;}
+  .about-text{border-left:none; padding-left:0;}
+}
+
+
+/* Ask Sergey AI */
+/* Make sure the HTML `hidden` attribute actually hides these (our CSS sets display/grid) */
+#chat-panel[hidden],
+#chat-scrim[hidden]{
+  display: none !important;
+}
+
+#chat-fab{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(0,0,0,.75);
+  color: #fff;
+  cursor: pointer;
+}
+
+#chat-scrim{
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0,0,0,.35);
+}
+
+body.chat-open{
+  overflow: hidden;
+}
+
+/* Hide the floating button when chat is open (prevents accidental overlap/taps) */
+body.chat-open #chat-fab{
+  display: none;
+}
+
+#chat-panel{
+  position: fixed;
+  right: 18px;
+  bottom: 68px;
+  width: min(420px, calc(100vw - 36px));
+  height: min(520px, calc(100vh - 140px)); /* slightly less tall */
+  z-index: 9999;
+  background: #0b0b0b;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 14px;
+  box-shadow: 0 12px 34px rgba(0,0,0,.35);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  overflow: hidden;
+}
+
+.chat-head{
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#chat-close{
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+#chat-log{
+  padding: 12px;
+  overflow: auto;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-msg{
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  padding: 10px 10px;
+  font-size: 14px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.chat-msg.user{ background: rgba(255,255,255,0.06); }
+
+#chat-form{
+  display:flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+
+#chat-input{
+  flex:1;
+  padding: 10px 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+#chat-send{
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  cursor: pointer;
+}
+
+.chat-foot{
+  padding: 8px 12px 12px;
+  font-size: 12px;
+  opacity: .75;
+}
+
+/* Mobile: make it a bottom sheet (not “full screen”) */
+@media (max-width: 640px){
+  #chat-panel{
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    height: min(62vh, 460px);
+    border-radius: 16px;
+  }
+}
+
+
+
+
+  
+
+    /* Collapsible publication subsections (no JS) */
+    details.pub-fold{
+      margin-top: 12px;
+    }
+    details.pub-fold > summary{
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 6px;
+    }
+    details.pub-fold > summary::-webkit-details-marker{ display:none; }
+    details.pub-fold > summary::before{
+      content: "▸";
+      display: inline-block;
+      width: 1.1em;
+      color: var(--muted);
+      transform: translateY(-1px);
+    }
+    details.pub-fold[open] > summary::before{ content: "▾"; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <button class="navbtn" id="nav-toggle" type="button" aria-expanded="false" aria-controls="sidenav">☰ Menu</button>
+      <div class="topbar-title">Sergey Alexeev</div>
+      <a class="navbtn" href="https://www.dropbox.com/scl/fi/1b33dtlr9qb46nlhngh1k/SA-CV-online.pdf?rlkey=nzrekmm323hpfp80eykkcoy9q&dl=0" target="_blank" rel="noopener">CV ↗</a>
+    </div>
+  </div>
+
+  <div class="nav-scrim" id="nav-scrim" hidden></div>
+
+<div class="layout">
+  <nav class="sidenav" id="sidenav" aria-label="Section navigation">
+    <button class="nav-close" id="nav-close" type="button" aria-label="Close menu">×</button>
+    <a href="#about">About <span>↵</span></a>
+    <a href="#publications">Publications <span>↵</span></a>
+    <a href="#impact">Impact <span>↵</span></a>
+    <a href="#grants">Grants <span>↵</span></a>
     <a href="#collaboration">Collaboration <span>↵</span></a>
     <a href="#consulting">Consulting <span>↵</span></a>
-    <a href="#teaching">Teaching <span>↵</span></a>{% endcapture %}
-{% capture nav_new %}    <a href="#grants">Grants <span>↵</span></a>
-    <a href="#consulting">Consulting <span>↵</span></a>
     <a href="#teaching">Teaching <span>↵</span></a>
-    <a href="#collaboration">Collaboration <span>↵</span></a>{% endcapture %}
+    <a href="https://www.dropbox.com/scl/fi/1b33dtlr9qb46nlhngh1k/SA-CV-online.pdf?rlkey=nzrekmm323hpfp80eykkcoy9q&dl=0" target="_blank" rel="noopener">CV <span>↗</span></a>
+  </nav>
 
-{{ reordered | replace: nav_old, nav_new }}
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Sergey Alexeev</h1>
+      </div>
+    </header>
+
+    <hr />
+
+
+
+
+
+
+<section id="about">
+  <h2>About</h2>
+
+  <div class="about-row">
+    <div class="about-text">
+      <p>
+        I am a Senior Research Associate at UNSW’s Nura Gili Centre for Indigenous Programs and an Adjunct Senior Lecturer at the University of Sydney’s NHMRC Clinical Trials Centre. I serve as an Associate Editor of the <a href="https://link.springer.com/journal/13033" target="_blank" rel="noopener"><i>International Journal of Mental Health Systems</i></a> and as a member of the Editorial Board of the <a href="https://www.sciencedirect.com/journal/international-journal-of-drug-policy/about/editorial-board" target="_blank" rel="noopener"><i>International Journal of Drug Policy</i></a>, and contribute to the <a href="https://onlinelibrary.wiley.com/toc/14657295/2026/64/1" target="_blank" rel="noopener">Institute for Replication (I4R)</a>.
+
+        <span class="inline-tip">
+          I’m of Ingrian-Finn heritage.<span class="info" tabindex="0" role="button" aria-label="More about Ingrian-Finn heritage">ⓘ
+            <span class="tip" role="note">
+              Ingrian Finns are a Finnish-speaking minority historically rooted in Ingria (around St Petersburg). Many families experienced
+<a href="https://en.wikipedia.org/wiki/Genocide_of_the_Ingrian_Finns" target="_blank" rel="noopener">
+  displacement and assimilation pressures</a>
+across the 20th century.
+            </span>
+          </span>
+        </span>
+      </p>
+    </div>
+
+    <img class="about-pic" src="Alexeev_Sergey_author_photo_square_1200px.jpg" alt="Sergey Alexeev">
+  </div>
+<!-- </section> -->
+
+
+
+
+
+
+
+  
+
+  <!-- Full-width handles (spans under image + text) -->
+  <p class="handles about-handles">
+    <a href="https://research.unsw.edu.au/people/dr-sergey-alexeev" target="_blank" rel="noopener">UNSW profile</a>
+    · <a href="https://www.dropbox.com/scl/fi/bk27rlmxm4ta3t6cjogau/Research-Statement-online.pdf?rlkey=ejscnfbykgxwcrggk3e1tk1nw&dl=0" target="_blank" rel="noopener">Research</a>
+    / <a href="https://www.dropbox.com/scl/fi/5bkrxyy1seo1x433b6ynr/Teaching-Statement-online.pdf?rlkey=86skii0gcp67amy76mrqeca1x&dl=0" target="_blank" rel="noopener">Teaching statements</a>
+    · <a href="https://scholar.google.com/citations?hl=en&inst=11461220086556808362&user=HmmERJsAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
+    · <a href="https://orcid.org/0000-0003-2413-2115" target="_blank" rel="noopener">ORCID</a>
+    · <a href="https://www.researchgate.net/profile/Sergey-Alexeev-4" target="_blank" rel="noopener">ResearchGate</a>
+    · <a href="https://x.com/SergeyVAlexeev" target="_blank" rel="noopener">X</a>
+    · <a href="https://www.linkedin.com/in/sergeyvalexeev/" target="_blank" rel="noopener">LinkedIn</a>
+  </p>
+</section>
+
+
+
+
+
+
+
+<section id="publications">
+  <h2>Publications</h2>
+
+  <h3>Journal articles &amp; related media coverage</h3>
+
+  <ul class="publist">
+
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1111/add.70547" target="_blank" rel="noopener">
+    The association between job loss and alcohol and tobacco use
+    <span class="abs">Using 19 waves of Australian HILDA data, this study finds little evidence that being fired or made redundant increases alcohol use, but small increases in tobacco initiation and consumption.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1111/add.70547" target="_blank" rel="noopener">Addiction (2026)</a>
+  </div>
+</li>
+
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1002/sim.70610" target="_blank" rel="noopener">
+    Cluster trials inference with CARE
+    <span class="abs">Using real-data treatment reassignments and synthetic simulations, this paper shows how uneven cluster sizes and structures can distort cluster-trial inference, and proposes CARE as a design-based protocol for clearer, more comparable analyses.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1002/sim.70610" target="_blank" rel="noopener">Statistics in Medicine (2026)</a>
+    · <a href="https://www.researchgate.net/publication/376204429_Cluster_trials_inference_with_CARE" target="_blank" rel="noopener">Post-print</a>
+    · <a href="https://insightplus.mja.com.au/2026/28/pragmatic-clinical-trials-may-be-more-fragile-than-they-appear" target="_blank" rel="noopener">MJA InSight+</a>
+  </div>
+</li>
+
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1177/00048674261439582" target="_blank" rel="noopener">
+    Under–25s show the clearest post–2021 rebound in mental health: HILDA 2001–2024
+    <span class="abs">Using 24 waves of nationally representative HILDA data, this paper documents a sharp youth mental-health decline to 2021 followed by a partial post-2021 rebound, strongest among under-25s but still below 2019 levels.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1177/00048674261439582" target="_blank" rel="noopener">Australian &amp; New Zealand Journal of Psychiatry (2026)</a>
+    · <a href="https://www.researchgate.net/publication/400793795_Under-25s_show_the_clearest_post-2021_rebound_in_mental_health_HILDA_2001-2024" target="_blank" rel="noopener">Post-print</a>
+    · <a href="https://x.com/SergeyVAlexeev/status/2055771809975607696?s=20" target="_blank" rel="noopener">X thread</a>
+    · <a href="https://www.smh.com.au/national/nsw/something-is-working-why-australia-has-reached-a-turning-point-for-youth-mental-health-20260512-p5zvzj.html" target="_blank" rel="noopener">SMH</a>
+    · <a href="https://www.abc.net.au/listen/programs/hobart-breakfast/breakfast/106735658" target="_blank" rel="noopener">ABC Radio (8:10)</a><span class="inline-tip"><span class="info" tabindex="0" role="button" aria-label="Note about ABC Radio coverage">ⓘ<span class="tip" role="note">One of many interviews on this paper.</span></span></span>
+    · <a href="https://insightplus.mja.com.au/2026/23/youth-mental-health-rebounds-but-dont-declare-victory-yet" target="_blank" rel="noopener">MJA InSight+</a>
+    · <a href="https://app.dimensions.ai/details/publication/pub.1201654163" target="_blank" rel="noopener">Dimensions</a>
+  </div>
+</li>
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1111/add.70455" target="_blank" rel="noopener">
+    Are people who use methamphetamine at increased risk of physical violence? Results from a nationally representative sample
+    <span class="abs">Using a population-representative survey, this paper finds people who use methamphetamine face substantially higher risk of violent victimisation, highlighting the need to consider safety and social supports alongside clinical treatment.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1111/add.70455" target="_blank" rel="noopener">Addiction (2026)</a>
+  </div>
+</li>
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1161/HYPERTENSIONAHA.125.26355" target="_blank" rel="noopener">
+    How Accurate Is Inpatient Blood Pressure Measurement?
+    <span class="abs">Routine inpatient blood-pressure checks often miss key accuracy steps, and none met all expert standards, suggesting ward readings may be systematically biased and should follow standardized protocols and better staff training.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1161/HYPERTENSIONAHA.125.26355" target="_blank" rel="noopener">Hypertension (2026)</a>
+  
+  </div>
+</li>
+
+<li>
+  <a class="pub-title" href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">
+    Further findings on the intergenerational transmission of alcohol consumption
+    <span class="abs">Using 43,817 parent–child pairs from 23 HILDA waves, I find alcohol use is transmitted mainly along same-sex lines, with parental influence strongest at ages 15–17 and then re-emerging when offspring become parents; patterns in non-birth dyads point to norm-based rather than purely biological channels.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">Health Economics (2026)</a>
+    · <a href="https://www.researchgate.net/publication/343877766_Further_findings_on_the_intergenerational_transmission_of_alcohol_consumption" target="_blank" rel="noopener">Post-print</a>
+    · <a href="https://theconversation.com/is-it-ok-to-drink-in-front-of-your-kids-new-research-shows-the-age-theyre-most-influenced-278667" target="_blank" rel="noopener">The Conversation</a>
+    · <a href="https://www.abc.net.au/listen/programs/sundayextra/sunday-extra-29-march-2026/106434348" target="_blank" rel="noopener">ABC Radio (37:03)</a><span class="inline-tip"><span class="info" tabindex="0" role="button" aria-label="Note about ABC Radio coverage">ⓘ<span class="tip" role="note">One of a dozen or so radio interviews on this paper, and my wife&rsquo;s favorite.</span></span></span>
+    · <a href="https://app.dimensions.ai/details/publication/pub.1199633440" target="_blank" rel="noopener">Dimensions</a>
+  </div>
+</li>
+
+<!-- 
+<li>
+  <a class="pub-title" href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">
+    Further findings on the intergenerational transmission of alcohol consumption
+    <span class="abs">Using 43,817 parent–child pairs from 23 HILDA waves, I find alcohol use is transmitted mainly along same-sex lines, with parental influence strongest at ages 15–17 and then re-emerging when offspring become parents; patterns in non-birth dyads point to norm-based rather than purely biological channels.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">Health Economics (2026)</a>
+    · <a href="https://www.researchgate.net/publication/343877766_Further_findings_on_the_intergenerational_transmission_of_alcohol_consumption" target="_blank" rel="noopener">Post-print</a>
+    · <a href="https://theconversation.com/is-it-ok-to-drink-in-front-of-your-kids-new-research-shows-the-age-theyre-most-influenced-278667" target="_blank" rel="noopener">The Conversation</a>
+    · <a href="https://www.abc.net.au/listen/programs/southeastsa-breakfast/breakfast/106481316" target="_blank" rel="noopener">ABC Radio (Breakfast, 2:37:01)</a>
+· <a href="https://www.abc.net.au/listen/programs/sydney-afternoons/afternoons/106479806" target="_blank" rel="noopener">ABC Radio (Afternoons, 19:50)</a>
+  </div>
+</li> -->
+
+
+<!-- 
+    <li>
+      <a class="pub-title" href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">
+        Further findings on the intergenerational transmission of alcohol consumption
+        <span class="abs">Using 43,817 parent–child pairs from 23 HILDA waves, I find alcohol use is transmitted mainly along same-sex lines, with parental influence strongest at ages 15–17 and then re-emerging when offspring become parents; patterns in non-birth dyads point to norm-based rather than purely biological channels.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://onlinelibrary.wiley.com/doi/10.1002/hec.70084" target="_blank" rel="noopener">Health Economics (2026)</a>
+        · <a href="https://www.researchgate.net/publication/343877766_Further_findings_on_the_intergenerational_transmission_of_alcohol_consumption" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://theconversation.com/is-it-ok-to-drink-in-front-of-your-kids-new-research-shows-the-age-theyre-most-influenced-278667" target="_blank" rel="noopener">The Conversation</a>
+      </div>
+    </li> -->
+
+
+
+    <li>
+      <a class="pub-title" href="https://www.dropbox.com/scl/fi/19y2kdrl86eufjzfkaqtj/JLE-ACCEPTED.pdf?dl=0&amp;rlkey=2e65mq2cpm7f6u7asqx9569gd" target="_blank" rel="noopener">
+        Dual-edged benefits of drug policing: a quarter century’s lesson from a heroin drought
+        <span class="abs">Using 25 years of monthly Australian postcode crime data and a triple‑difference design, we estimate the 2001 heroin drought caused a short‑run spike but sizable long‑run crime reductions—about 22% cumulatively over 18 years (≈AUD 2.2b/year in averted crime).</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1086/736041" target="_blank" rel="noopener">Journal of Law and Economics</a>
+        · <a href="https://www.researchgate.net/publication/361601897_Dual-edged_benefits_of_drug_policing_a_quarter_century%27s_lesson_from_a_heroin_drought" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://x.com/SergeyVAlexeev/status/2018781981635698808" target="_blank" rel="noopener">X thread</a>
+         · <a href="https://theconversation.com/as-australias-tobacco-wars-continue-a-nsw-heroin-drought-in-2000-might-offer-lessons-274537" target="_blank" rel="noopener">The Conversation</a>
+         · <a href="https://www.smh.com.au/national/pushing-up-the-price-of-heroin-cut-crime-why-isn-t-the-same-thing-happening-with-tobacco-20260203-p5nz6c.html" target="_blank" rel="noopener">SMH</a>
+        · <a href="https://www.buzzsprout.com/1623766/episodes/19163527?t=1224" target="_blank" rel="noopener">Policing Australia podcast (20:24)</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1199119468" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.drugpo.2025.104981" target="_blank" rel="noopener">
+        Risky alcohol use and violence against women: cause or consequence?
+        <span class="abs">Bigger drinking bouts raise women’s risk of physical violence, and being assaulted tends to increase how much they drink later—suggesting targeted prevention and post‑incident alcohol support could help.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.drugpo.2025.104981" target="_blank" rel="noopener">International Journal of Drug Policy (2025)</a><span class="inline-tip"><span class="info" tabindex="0" role="button" aria-label="Note about corrigendum">ⓘ<span class="tip" role="note"><a href="https://doi.org/10.1016/j.drugpo.2025.105021" target="_blank" rel="noopener">This</a> corrigendum adds me as co-author</span></span></span>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1192827829" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1111/ecin.13277" target="_blank" rel="noopener">
+        A closer look at Doleac and Mukherjee (2022) and the effects of naloxone access laws on opioid ER admissions
+        <span class="abs">Re‑analysing Doleac &amp; Mukherjee (2022), I document data/timing and inference problems; corrected triple‑differences show naloxone access laws do not increase opioid ER admissions, undermining the “moral hazard” claim.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1111/ecin.13277" target="_blank" rel="noopener">Economic Inquiry (2025)</a>
+        · <a href="https://www.researchgate.net/publication/377492875_A_closer_look_at_Doleac_and_Mukherjee_2022_and_the_effects_of_naloxone_access_laws_on_opioid_ER_admissions" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://filtermag.org/naloxone-moral-hazard-replication-study/" target="_blank" rel="noopener">Filter Magazine</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1186347094" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.ijnurstu.2024.104690" target="_blank" rel="noopener">
+        Transforming nursing assessment in acute hospitals: A cluster randomised controlled trial of an evidence-based nursing core assessment (the ENCORE trial)
+        <span class="abs">In a cluster RCT across 29 general wards (5 Australian sites), ENCORE improved proactive nursing surveillance and shifted rescue responses—benefiting low‑complexity patients while increasing escalations for those with multimorbidity.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.ijnurstu.2024.104690" target="_blank" rel="noopener">International Journal of Nursing Studies (2024)</a>
+        · <a href="https://www.researchgate.net/publication/377214128_Transforming_nursing_assessment_in_acute_hospitals_A_cluster_randomised_controlled_trial_of_an_evidence-based_nursing_core_assessment_the_ENCORE_trial" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://anmj.org.au/transforming-nursing-assessment-in-acute-hospitals/" target="_blank" rel="noopener">ANMJ</a>
+        · <a href="https://medicalxpress.com/news/2024-02-nursing-acute-hospitals.html" target="_blank" rel="noopener">Medical Xpress</a>
+        · <a href="https://www.miragenews.com/transforming-nursing-assessment-in-acute-1179174/" target="_blank" rel="noopener">Mirage.News</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1167707833" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">
+        Harm reduction or amplification? The adverse impact of a supervised injection room on housing prices
+        <span class="abs">Using spatial (triple) difference‑in‑differences around Melbourne’s supervised injecting room, we estimate nearby housing values fell about 5–7% after opening, consistent with localised amenity costs.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">Regional Science and Urban Economics (2023)</a>
+        · <a href="https://www.researchgate.net/publication/366196579_Harm_reduction_or_amplification_The_adverse_impact_of_a_supervised_injection_room_on_housing_prices" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://youtu.be/1tisCEP_svI" target="_blank" rel="noopener">7NEWS</a>
+        · <a href="https://www.theage.com.au/national/victoria/richmond-injecting-room-shaved-60-000-off-nearby-house-prices-study-20230503-p5d55c.html" target="_blank" rel="noopener">The Age</a>
+        · <a href="https://www.news.com.au/national/victoria/news/the-effect-is-large-richmond-safe-injecting-rooms-60k-cost-to-devastated-homeowners/news-story/26ac684a7238353eed7b31dba379cebc" target="_blank" rel="noopener">news.com.au</a>
+        · <a href="https://www.cairnspost.com.au/news/national/the-effect-is-large-richmond-safe-injecting-rooms-60k-cost-to-devastated-homeowners/news-story/26ac684a7238353eed7b31dba379cebc" target="_blank" rel="noopener">Cairns Post</a>
+        · <a href="https://www.brisbanetimes.com.au/national/victoria/richmond-injecting-room-shaved-60-000-off-nearby-house-prices-study-20230503-p5d55c.html" target="_blank" rel="noopener">Brisbane Times</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1153565269" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1108/IJM-08-2021-0475" target="_blank" rel="noopener">
+        Wage equation misrepresents gay wage discrimination: overlooked evidence from Russia
+        <span class="abs">Using Russian household survey waves and a diff‑in‑diff around the 2013 “gay‑propaganda” law, I show wage‑equation approaches can yield misleading “no discrimination” results—highlighting endogeneity and reporting issues in orientation wage gaps.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1108/IJM-08-2021-0475" target="_blank" rel="noopener">International Journal of Manpower (2022)</a>
+        · <a href="https://www.researchgate.net/publication/364054421_Wage_equation_misrepresents_gay_wage_discrimination_overlooked_evidence_from_Russia" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1151456101" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">
+        Fines for illicit drug use do not prevent future crime: evidence from randomly assigned judges
+        <span class="abs">Leveraging quasi‑random assignment to judges in NSW, we find monetary fines for illicit drug use/possession do not reduce recidivism—contrary to naïve OLS estimates.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Journal of Economic Behavior and Organization (2022)</a>
+        · <a href="https://www.researchgate.net/publication/361844461_Fines_for_illicit_drug_use_do_not_prevent_future_crime_evidence_from_randomly_assigned_judges" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://www.connections.edu.au/publicationhighlight/fines-illicit-drug-use-do-not-prevent-future-crime-evidence-randomly-assigned" target="_blank" rel="noopener">Drug and Alcohol Research Connections</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1149112386" target="_blank" rel="noopener">Dimensions</a>
+        · <a href="https://docs.google.com/viewer?url=https%3A%2F%2Fdocuments.parliament.qld.gov.au%2Fcom%2FJICSC-CD82%2FEACATTSSDA-7004%2Fsubmissions%2F00000120.pdf" target="_blank" rel="noopener">Policy impact</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://onlinelibrary.wiley.com/doi/10.1111/ecot.12330" target="_blank" rel="noopener">
+        Technical change and wage premiums amongst skilled labor: evidence from the economic transition
+        <span class="abs">I document a post‑transition demand shift that raised wage premiums for law and business graduates in Russia (1985–2015) and use a skill‑biased technical change model to explain changing wage structures and transition recessions.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://onlinelibrary.wiley.com/doi/10.1111/ecot.12330" target="_blank" rel="noopener">Economics of Transition (2022)</a>
+        · <a href="https://www.researchgate.net/publication/343877771_Technical_change_and_wage_premiums_amongst_skilled_labor_evidence_from_the_economic_transition" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://blogs.lse.ac.uk/europpblog/2022/05/11/western-sanctions-are-only-strengthening-putins-grip-on-power/" target="_blank" rel="noopener">EUROPP</a>
+        · <a href="https://www.dropbox.com/scl/fi/jd578w47vr4lsf34ucqlm/RU_PREM_GSOM.pdf?dl=0&amp;rlkey=t8ckfx7uj470wfbk66govsjzh" target="_blank" rel="noopener">Slides</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">
+        Changes in and correlates of Australian public attitudes toward illicit drug use
+        <span class="abs">Using the 2013, 2016 and 2019 National Drug Strategy Household Surveys, we show growing support for cannabis legalisation and less punitive responses for some drugs, while support for legalising heroin and methamphetamine remains low.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">Drug and Alcohol Review (2021)</a>
+        · <a href="https://www.researchgate.net/publication/357390147_Changes_in_and_correlates_of_Australian_public_attitudes_toward_illicit_drug_use" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://www.theguardian.com/australia-news/2021/dec/29/support-for-legalising-marijuana-in-australia-nearly-doubles-over-six-years" target="_blank" rel="noopener">The Guardian</a>
+        · <a href="https://www.forbes.com/sites/ajherrington/2021/12/29/support-for-marijuana-legalization-in-australia-nearly-doubles-in-six-years/?ref=altdnt" target="_blank" rel="noopener">Forbes</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1144231878" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.drugpo.2021.103399" target="_blank" rel="noopener">
+        The Australian ready-to-drink beverages tax missed its target age group
+        <span class="abs">Using HILDA with diff‑in‑diff and comparative interrupted time‑series, we find the 2008–09 “alcopops” tax did not reduce drinking among under‑25s but reduced consumption among adults—consistent with substitution among youth.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.drugpo.2021.103399" target="_blank" rel="noopener">International Journal of Drug Policy (2021)</a>
+        · <a href="https://www.researchgate.net/publication/345045309_The_Australian_ready-to-drink_beverages_tax_missed_its_target_age_group" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1437614229255716865" target="_blank" rel="noopener">X thread</a>
+        · <a href="https://www.austaxpolicy.com/australias-current-alcohol-tax-system-impedes-public-health-policy/" target="_blank" rel="noopener">Austaxpolicy</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1140408432" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.jhe.2020.101710" target="_blank" rel="noopener">
+        The role of imputed rents in intergenerational income mobility in three countries
+        <span class="abs">Including imputed rent as non‑cash income makes Australia appear ~22% less intergenerationally mobile, with little change for the US or Germany—warning that mobility comparisons depend on income definitions.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jhe.2020.101710" target="_blank" rel="noopener">Journal of Housing Economics (2020)</a>
+        · <a href="https://www.researchgate.net/publication/342671632_The_Role_of_Imputed_Rents_in_Intergenerational_Income_Mobility_in_Three_Countries" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1429336180135325712?s=20" target="_blank" rel="noopener">X thread</a>
+        · <a href="https://cepr.org/voxeu/columns/comparing-effects-homeownership-intergenerational-income-mobility-us-germany-and" target="_blank" rel="noopener">VoxEU</a>
+        · <a href="https://www.austaxpolicy.com/covid-19-and-australias-housing-crisis-how-the-intergenerational-impact-can-go-undetected/" target="_blank" rel="noopener">Austaxpolicy</a>
+        · <a href="https://theconversation.com/yes-we-are-a-more-equal-society-than-most-but-not-quite-as-mobile-as-the-productivity-commission-suggests-heres-why-234804" target="_blank" rel="noopener">The Conversation</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1128978508" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+  </ul>
+
+  <details class="pub-fold">
+  <summary>Other Writing</summary>
+  <ul class="publist">
+    <li><a class="pub-title" href="https://data.rcsi.science/publications/news/147/" target="_blank" rel="noopener">Доказательная государственная политика: опыт Австралии</a></li>
+    <li><a class="pub-title" href="https://gsom.spbu.ru/students/blog/blog2017_02_13/" target="_blank" rel="noopener">Умом пощупать то, что глазами не увидеть</a></li>
+  </ul>
+</details>
+
+
+<details class="pub-fold">
+  <summary>Forthcoming &amp; Under Review</summary>
+  <ul class="publist">
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/369788106_Booze_Bruises_A_Century-Old_Natural_Experiment_on_Causal_Link_Between_Pubs_and_Crime" target="_blank" rel="noopener">Booze & Bruises: A Century-Old Natural Experiment on Causal Link Between Pubs and Crime</a></li> -->
+
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/370690171_Clean_slate_same_fate_judge-design_evidence_on_the_limits_of_conviction_avoidance" target="_blank" rel="noopener">Clean slate, same fate: judge–design evidence on the limits of conviction avoidance</a></li>
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans" target="_blank" rel="noopener">State Heroes, Social Pariahs: A Study on Ukraine War Veterans</a></li>
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/391950346_Interviewers_as_Instruments_Estimating_the_Wage_Penalty_of_Drug_Use" target="_blank" rel="noopener">Interviewers as Instruments: Estimating the Wage Penalty of Drug Use</a></li>
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/382330042_Unexpected_Health_Improvements_Following_Imprisonment_Evidence_from_an_Australian_National_Survey" target="_blank" rel="noopener">Unexpected Health Improvements Following Imprisonment: Evidence from an Australian National Survey</a></li> -->
+
+    <!-- <li><a class="pub-title" href="https://www.researchgate.net/publication/357300021_Addiction_and_gender_norms" target="_blank" rel="noopener">Addiction and gender norms</a></li> -->
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/362619598_Opportunity_as_a_replacement_therapy" target="_blank" rel="noopener">Opportunity as a replacement therapy</a></li> -->
+
+
+  </ul>
+</details>
+
+
+
+<details class="pub-fold">
+  <summary>Work in Progress</summary>
+  <ul class="publist">
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/369788106_Booze_Bruises_A_Century-Old_Natural_Experiment_on_Causal_Link_Between_Pubs_and_Crime" target="_blank" rel="noopener">Booze & Bruises: A Century-Old Natural Experiment on Causal Link Between Pubs and Crime</a></li>
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/343877836_Produced_Scores_and_Sorting_in_Centralized_Admission" target="_blank" rel="noopener">Produced Scores and Sorting in Centralized Admission</a></li>
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/370690171_Clean_slate_same_fate_judge-design_evidence_on_the_limits_of_conviction_avoidance" target="_blank" rel="noopener">Clean slate, same fate: judge–design evidence on the limits of conviction avoidance</a></li> -->
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/376204429_Cluster_trials_inference_with_CARE" target="_blank" rel="noopener">Cluster trials inference with CARE</a></li> -->
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans" target="_blank" rel="noopener">State Heroes, Social Pariahs: A Study on Ukraine War Veterans</a></li>
+ -->
+<!--     
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/391950346_Interviewers_as_Instruments_Estimating_the_Wage_Penalty_of_Drug_Use" target="_blank" rel="noopener">Interviewers as Instruments: Estimating the Wage Penalty of Drug Use</a></li> -->
+
+
+<!-- 
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/400793795_Under-25s_show_the_clearest_post-2021_rebound_in_mental_health_HILDA_2001-2024" target="_blank" rel="noopener">Under–25s show the clearest post–2021 rebound in mental health: HILDA 2001–2024</a></li> -->
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/382330042_Unexpected_Health_Improvements_Following_Imprisonment_Evidence_from_an_Australian_National_Survey" target="_blank" rel="noopener">Unexpected Health Improvements Following Imprisonment: Evidence from an Australian National Survey</a></li>
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/357300021_Addiction_and_gender_norms" target="_blank" rel="noopener">Addiction and gender norms</a></li>
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/362619598_Opportunity_as_a_replacement_therapy" target="_blank" rel="noopener">Opportunity as a replacement therapy</a></li>
+
+
+    <li><a class="pub-title" href="https://www.researchgate.net/publication/354717923_The_middle_class_is_not_disappearing_-_it_is_mismeasured" target="_blank" rel="noopener">The middle class is not disappearing—it is mismeasured</a></li>
+
+
+  </ul>
+</details>
+
+</section>
+     
+
+
+<section id="impact">
+  <h2>Selected impact</h2>
+
+  <ul class="publist">
+
+    <li>
+      <a class="pub-title" href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">
+        Australian drug-diversion policy (2026)
+        <span class="abs">Using NSW administrative data and quasi-random judicial assignment, the study found no measurable deterrent effect of fines for illicit-drug use or possession. QNADA, QuIHN and QAIHC cited it in submissions to a Queensland parliamentary committee considering drug-diversion policy.</span>
+      </a>
+      <div class="pub-meta">My fines study was cited in three Queensland parliamentary submissions supporting health-oriented alternatives to fines.</div>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Paper</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">QNADA</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000120.pdf" target="_blank" rel="noopener">QuIHN</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000145.pdf" target="_blank" rel="noopener">QAIHC</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">
+        Australian cannabis-law reform (2023–24)
+        <span class="abs">The National Drug and Alcohol Research Centre's submission drew on my research on Australian public attitudes toward illicit drugs and on fines for illicit-drug offences when discussing legalisation, decriminalisation, and the costs of criminal penalties.</span>
+      </a>
+      <div class="pub-meta">NDARC cited two of my papers in its submission to the Senate inquiry into the Legalising Cannabis Bill 2023.</div>
+      <div class="pub-links">
+        <a href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">Senate submission</a>
+        · <a href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">Public-attitudes paper</a>
+        · <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Fines paper</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">
+        Supervised injecting policy, Ireland (2023–24)
+        <span class="abs">The Queen’s University Belfast-led rapid evidence review cites our Melbourne study on local housing-market effects. Ireland's Department of Health later identified the review as part of the rationale for the supervised injecting facility model when licensing the country's first pilot facility.</span>
+      </a>
+      <div class="pub-meta">My Melbourne MSIR housing study was cited in the QUB rapid evidence review later referenced by Ireland's Department of Health in the rationale for its first pilot supervised injecting facility.</div>
+      <div class="pub-links">
+        <a href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">Irish Department of Health</a>
+        · <a href="https://www.drugsandalcohol.ie/39929/1/DS_Overdose_prevention_centres_Report.pdf" target="_blank" rel="noopener">QUB rapid evidence review</a>
+        · <a href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">Paper</a>
+      </div>
+    </li>
+
+  </ul>
+</section>
+
+
+<section id="grants">
+  <h2>Research program &amp; grants</h2>
+
+  <ul class="publist">
+
+    <li>
+      <a class="pub-title" href="https://alexeev.pw/revalue-au/" target="_blank" rel="noopener">
+        REVALUE-AU: Revaluing Work and Evaluating Labour-market Adjustment in Australia
+        <span class="abs">
+          REVALUE-AU will study what happens after Australian tribunals decide that work done mainly by women, in aged care, disability and community services, childcare and dental assisting, has been undervalued, and order its legal pay rate to rise. Using worker-level data, we track what those decisions actually change: wages, hours, employment, retention, and how employers, funders and services respond. The aim is evidence on what wage correction does once it reaches the payroll.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="/revalue-au/">Webpage</a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/j2a7bihu7y816w8h43eph/REVALUE_AU_project_spine.pdf?rlkey=zmkjnl8ut9wzxtetfxwzwh2ej&dl=0" target="_blank" rel="noopener">
+          Project spine
+        </a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/rs163f86ct7klmjwd6ruo/REVALUE_AU_Discovery_conversation_one_pager.pdf?rlkey=saneiunewm6csrsow3m4pdas3&dl=0" target="_blank" rel="noopener">
+          One-pager
+        </a>
+      </div>
+    </li>
+
+
+    <li>
+
+
+      <span class="pub-title">
+  EVIDENCE: Evaluating Interventions for Drug Epidemics—Net Community Effectiveness
+  <span class="abs">
+    This project will study how harm reduction programs—such as safe injection centres and needle exchanges—in Sydney and Melbourne affect health, safety, and wellbeing for everyone. We aim to find out what works best, for whom, and how to make drug policies fairer and more effective across Australia. All results will be openly shared to help communities, service providers, and policymakers make better decisions. Special focus will be given to young people and First Nations Australians.
+  </span>
+</span>
+      
+      <!-- <a class="pub-title" href="https://alexeev.pw/evidence/" target="_blank" rel="noopener">
+        EVIDENCE: Evaluating Interventions for Drug Epidemics—Net Community Effectiveness
+        <span class="abs">
+          This project will study how harm reduction programs—such as safe injection centres and needle exchanges—in Sydney and Melbourne affect health, safety, and wellbeing for everyone. We aim to find out what works best, for whom, and how to make drug policies fairer and more effective across Australia. All results will be openly shared to help communities, service providers, and policymakers make better decisions. Special focus will be given to young people and First Nations Australians.
+        </span>
+      </a> -->
+
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/antyfk59wc2j7uoxjxe3p/Alexeev-IG-28.07.25.pdf?rlkey=5fua4d7oi5ql4llpa7xde2b0v&dl=0" target="_blank" rel="noopener">
+          Proposal under NHMRC Investigator grant
+        </a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/vyud6tztpexybr0djx9i4/Outcome-and-assessment.pdf?rlkey=tc2os9shrrgrxlo50ytekmk1p&dl=0" target="_blank" rel="noopener">
+          Latest feedback
+        </a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://alexeev.pw/hope/" target="_blank" rel="noopener">
+        HOPE: Health Outcomes and Post-incarceration Evaluation
+        <span class="abs">
+          The HOPE project will find out how going to prison affects people’s health in Australia. We compare people sent to prison with those given community orders, using a research method that shows the true impact of prison. By working with Aboriginal leaders and people with lived experience, we aim to give clear answers to help improve health and justice policies. This evidence is urgently needed to address health gaps and support better outcomes for individuals, families, communities and the nation.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="/hope/">Webpage</a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/ui00w5pvt114qb3rypa01/HOPE_MRFF-EMCR2025_2051125_Proposal-Feedback.pdf?rlkey=b6zt70bb8agddwq72p841xlib&dl=0" target="_blank" rel="noopener">
+          Proposal under EMC MRFF
+        </a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/wldfqll1o0xtizy1brff3/OUTCOME-REJECTION.pdf?rlkey=8v778vdsle4qi4b8ik17jpq56&dl=0" target="_blank" rel="noopener">
+          Latest feedback
+        </a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://alexeev.pw/family/" target="_blank" rel="noopener">
+        FAMILY: Safe family-aware early identification and service planning for youth depression
+        <span class="abs">
+          FAMILY will find out which aspects of family life—like a parent's mental health or financial stress—can help identify young people at risk of depression, and how services can use that information safely, without stigma or blame. Using national survey and linked data, and working closely with young people, carers and clinicians, we aim to build a practical, ethical framework services can use for earlier, more effective support.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="/family/">Webpage</a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/pxmxx4ks2c454af5vu7b3/FAMILY_project.pdf?rlkey=sldy0wep1zlsm411kbz19p06y&dl=0" target="_blank" rel="noopener">
+          Project spine
+        </a>
+        <!-- · <a href="#" target="_blank" rel="noopener">Draft proposal</a> -->
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.dropbox.com/scl/fi/flbwpv7wzsewi00zje0d4/DE260100996.pdf?dl=0&rlkey=0gsgln3akrkhg5r8yh8l5jx5o" target="_blank" rel="noopener">
+        Robust inference for stepped-wedge trials: addressing negative weights with CARE-SW
+        <span class="abs">
+          This project will improve how stepped-wedge cluster trials are analysed when standard estimators can place misleading negative weights on treatment effects. We will develop robust inference tools that remain reliable under staggered rollout, treatment-effect heterogeneity, and practical departures from ideal design assumptions, so trialists and policymakers can make better decisions from complex real-world evidence.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/ubyvwcq2lbj8wzw30jz8e/Alexeev_Grant-Proposal.pdf?rlkey=819yf3ryga0q6g94re8heaipc&dl=0" target="_blank" rel="noopener">
+          Proposal under NHMRC Ideas grant
+        </a>
+      </div>
+    </li>
+
+  </ul>
+</section>
+
+
+<section id="collaboration">
+  <h2>Collaboration</h2>
+
+  <p>
+    I’m actively looking for new collaborators: co-authors, HDR/PhD candidates, applied partners, and people with decision-facing questions that need careful empirical work. My work spans econometrics, biostatistics, epidemiology, and health economics. I also do expert witness / independent expert reports for courts and tribunals, which keeps me grounded in what “decision-ready” evidence looks like.
+  </p>
+
+  <p>
+    For students, collaboration can include mentorship and supervision: concrete projects can often be shaped into publishable theses or papers. For other collaborators, I’m especially interested in projects where strong design, linked administrative or clinical data, and a clear decision point come together.
+  </p>
+
+
+<p>
+  If you’re interested in collaborating, email me at <a href="mailto:sergei.v.alexeev@gmail.com">sergei.v.alexeev@gmail.com</a> with a short note about your background, interests, and the question you’d like to work on, or message me on WhatsApp at <a href="https://wa.me/61457871540" target="_blank" rel="noopener">+61 457 871 540</a>. If you’re not quite ready to reach out, you can start with my Sergey AI chat to get quick clarification on my background, interests, and collaboration/supervision approach before contacting me. You’re also welcome to reach out to my current and past students for candid feedback on my supervision style (e.g., <a href="https://southernrenal.com.au" target="_blank" rel="noopener">Alexandra Gallagher</a>, <a href="mailto:jcornish@swin.edu.au">Jessica Cornish</a>, and <a href="https://www.linkedin.com/in/oscarninou/" target="_blank" rel="noopener">Oscar Ninou</a>).
+</p>
+
+<!-- <p>
+  If you’re interested, email me at <a href="mailto:sergei.v.alexeev@gmail.com">sergei.v.alexeev@gmail.com</a> with a short note about your background and interests, or message me on WhatsApp at <a href="https://wa.me/61457871540" target="_blank" rel="noopener">+61 457 871 540</a>. You’re also welcome to reach out to my current and past students for candid feedback on my supervision style (e.g., <a href="https://southernrenal.com.au" target="_blank" rel="noopener">Alexandra Gallagher</a>, <a href="mailto:jcornish@swin.edu.au">Jessica Cornish</a>, and <a href="https://www.linkedin.com/in/oscarninou/" target="_blank" rel="noopener">Oscar Ninou</a>).
+</p> -->
+
+  <h4>For prospective HDR/PhD students</h4>
+  <ul>
+    <li>Scholarships: domestic candidates are typically much less competitive than international candidates (roughly ~70% vs ~10–15%, depending on round and university).</li>
+    <li>Eligibility / competitiveness: Honours degree or ~1 year of research in a Master’s with strong grades (≈75%+); otherwise, first-author papers plus ~1 year FTE research experience.</li>
+    <li>Clear evidence of strong English language capability.</li>
+  </ul>
+</section>
+
+
+
+
+
+    <!-- <section id="research">
+      <h2>Research</h2>
+      <ul>
+        <li><b>Evaluation & causal inference:</b> trial-based and quasi-experimental evaluation; policy impacts in health and justice.</li>
+        <li><b>Health & social policy:</b> substance use, violence, harm reduction, and system-level interventions.</li>
+        <li><b>Applied microeconometrics:</b> predictive modelling and cost–benefit / decision support in messy real-world data.</li>
+      </ul>
+    </section> -->
+
+
+<!-- <section id="publications">
+  <h2>Publications</h2>
+
+  <h3>Journal articles &amp; related media coverage</h3>
+
+  <ul class="publist">
+
+
+
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.drugpo.2025.104981" target="_blank" rel="noopener">
+        Risky alcohol use and violence against women: cause or consequence?
+        <span class="abs">Bigger drinking bouts raise women’s risk of physical violence, and being assaulted tends to increase how much they drink later—suggesting targeted prevention and post‑incident alcohol support could help.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.drugpo.2025.104981" target="_blank" rel="noopener">International Journal of Drug Policy (2025)</a><span class="inline-tip"><span class="info" tabindex="0" role="button" aria-label="Note about corrigendum">ⓘ<span class="tip" role="note"><a href="https://doi.org/10.1016/j.drugpo.2025.105021" target="_blank" rel="noopener">This</a> corrigendum adds you as co-author</span></span></span>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1192827829" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://app.dimensions.ai/details/publication/pub.1199633440" target="_blank" rel="noopener">
+        Further findings on the intergenerational transmission of alcohol consumption
+      </a>
+      <div class="pub-links">
+        · <a href="https://app.dimensions.ai/details/publication/pub.1199633440" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.dropbox.com/scl/fi/19y2kdrl86eufjzfkaqtj/JLE-ACCEPTED.pdf?dl=0&amp;rlkey=2e65mq2cpm7f6u7asqx9569gd" target="_blank" rel="noopener">
+        Dual-edged benefits of drug policing: a quarter century’s lesson from a heroin drought
+        <span class="abs">Using 25 years of monthly Australian postcode crime data and a triple‑difference design, we estimate the 2001 heroin drought caused a short‑run spike but sizable long‑run crime reductions—about 22% cumulatively over 18 years (≈AUD 2.2b/year in averted crime).</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/19y2kdrl86eufjzfkaqtj/JLE-ACCEPTED.pdf?dl=0&amp;rlkey=2e65mq2cpm7f6u7asqx9569gd" target="_blank" rel="noopener">Journal of Law and Economics (forthcoming)</a>
+        · <a href="https://www.researchgate.net/publication/361601897_Dual-edged_benefits_of_drug_policing_a_quarter_century%27s_lesson_from_a_heroin_drought" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1720246822512558258" target="_blank" rel="noopener">X thread</a>
+         · <a href="https://www.smh.com.au/national/pushing-up-the-price-of-heroin-cut-crime-why-isn-t-the-same-thing-happening-with-tobacco-20260203-p5nz6c.html" target="_blank" rel="noopener">SMH</a>
+        · <a href="https://www.buzzsprout.com/1623766/episodes/19163527?t=1224" target="_blank" rel="noopener">Policing Australia podcast (20:24)</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1199119468" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1111/ecin.13277" target="_blank" rel="noopener">
+        A closer look at Doleac and Mukherjee (2022) and the effects of naloxone access laws on opioid ER admissions
+        <span class="abs">Re‑analysing Doleac &amp; Mukherjee (2022), I document data/timing and inference problems; corrected triple‑differences show naloxone access laws do not increase opioid ER admissions, undermining the “moral hazard” claim.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1111/ecin.13277" target="_blank" rel="noopener">Economic Inquiry (2025)</a>
+        · <a href="https://www.researchgate.net/publication/377492875_A_closer_look_at_Doleac_and_Mukherjee_2022_and_the_effects_of_naloxone_access_laws_on_opioid_ER_admissions" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://www.dropbox.com/scl/fi/l2iki1wj88toqojstaxgr/Revision-letters.pdf?dl=0&amp;rlkey=u4crvdh7zr6r1xj9952tu2jz9" target="_blank" rel="noopener">Revision letters</a>
+        · <a href="https://filtermag.org/naloxone-moral-hazard-replication-study/" target="_blank" rel="noopener">Filter Magazine</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1186347094" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.ijnurstu.2024.104690" target="_blank" rel="noopener">
+        Transforming nursing assessment in acute hospitals: A cluster randomised controlled trial of an evidence-based nursing core assessment (the ENCORE trial)
+        <span class="abs">In a cluster RCT across 29 general wards (5 Australian sites), ENCORE improved proactive nursing surveillance and shifted rescue responses—benefiting low‑complexity patients while increasing escalations for those with multimorbidity.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.ijnurstu.2024.104690" target="_blank" rel="noopener">International Journal of Nursing Studies (2024)</a>
+        · <a href="https://www.researchgate.net/publication/377214128_Transforming_nursing_assessment_in_acute_hospitals_A_cluster_randomised_controlled_trial_of_an_evidence-based_nursing_core_assessment_the_ENCORE_trial" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://anmj.org.au/transforming-nursing-assessment-in-acute-hospitals/" target="_blank" rel="noopener">ANMJ</a>
+        · <a href="https://medicalxpress.com/news/2024-02-nursing-acute-hospitals.html" target="_blank" rel="noopener">Medical Xpress</a>
+        · <a href="https://www.miragenews.com/transforming-nursing-assessment-in-acute-1179174/" target="_blank" rel="noopener">Mirage.News</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1167707833" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">
+        Harm reduction or amplification? The adverse impact of a supervised injection room on housing prices
+        <span class="abs">Using spatial (triple) difference‑in‑differences around Melbourne’s supervised injecting room, we estimate nearby housing values fell about 5–7% after opening, consistent with localised amenity costs.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">Regional Science and Urban Economics (2023)</a>
+        · <a href="https://www.researchgate.net/publication/366196579_Harm_reduction_or_amplification_The_adverse_impact_of_a_supervised_injection_room_on_housing_prices" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1616259867291054080" target="_blank" rel="noopener">X thread</a>
+        · <a href="https://youtu.be/1tisCEP_svI" target="_blank" rel="noopener">7NEWS</a>
+        · <a href="https://www.theage.com.au/national/victoria/richmond-injecting-room-shaved-60-000-off-nearby-house-prices-study-20230503-p5d55c.html" target="_blank" rel="noopener">The Age</a>
+        · <a href="https://www.news.com.au/national/victoria/news/the-effect-is-large-richmond-safe-injecting-rooms-60k-cost-to-devastated-homeowners/news-story/26ac684a7238353eed7b31dba379cebc" target="_blank" rel="noopener">news.com.au</a>
+        · <a href="https://www.cairnspost.com.au/news/national/the-effect-is-large-richmond-safe-injecting-rooms-60k-cost-to-devastated-homeowners/news-story/26ac684a7238353eed7b31dba379cebc" target="_blank" rel="noopener">Cairns Post</a>
+        · <a href="https://www.brisbanetimes.com.au/national/victoria/richmond-injecting-room-shaved-60-000-off-nearby-house-prices-study-20230503-p5d55c.html" target="_blank" rel="noopener">Brisbane Times</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1153565269" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1108/IJM-08-2021-0475" target="_blank" rel="noopener">
+        Wage equation misrepresents gay wage discrimination: overlooked evidence from Russia
+        <span class="abs">Using Russian household survey waves and a diff‑in‑diff around the 2013 “gay‑propaganda” law, I show wage‑equation approaches can yield misleading “no discrimination” results—highlighting endogeneity and reporting issues in orientation wage gaps.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1108/IJM-08-2021-0475" target="_blank" rel="noopener">International Journal of Manpower (2022)</a>
+        · <a href="https://www.researchgate.net/publication/364054421_Wage_equation_misrepresents_gay_wage_discrimination_overlooked_evidence_from_Russia" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1151456101" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">
+        Fines for illicit drug use do not prevent future crime: evidence from randomly assigned judges
+        <span class="abs">Leveraging quasi‑random assignment to judges in NSW, we find monetary fines for illicit drug use/possession do not reduce recidivism—contrary to naïve OLS estimates.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Journal of Economic Behavior and Organization (2022)</a>
+        · <a href="https://www.researchgate.net/publication/361844461_Fines_for_illicit_drug_use_do_not_prevent_future_crime_evidence_from_randomly_assigned_judges" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://www.connections.edu.au/publicationhighlight/fines-illicit-drug-use-do-not-prevent-future-crime-evidence-randomly-assigned" target="_blank" rel="noopener">Drug and Alcohol Research Connections</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1149112386" target="_blank" rel="noopener">Dimensions</a>
+        · <a href="https://docs.google.com/viewer?url=https%3A%2F%2Fdocuments.parliament.qld.gov.au%2Fcom%2FJICSC-CD82%2FEACATTSSDA-7004%2Fsubmissions%2F00000120.pdf" target="_blank" rel="noopener">Policy impact</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://onlinelibrary.wiley.com/doi/10.1111/ecot.12330" target="_blank" rel="noopener">
+        Technical change and wage premiums amongst skilled labor: evidence from the economic transition
+        <span class="abs">I document a post‑transition demand shift that raised wage premiums for law and business graduates in Russia (1985–2015) and use a skill‑biased technical change model to explain changing wage structures and transition recessions.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://onlinelibrary.wiley.com/doi/10.1111/ecot.12330" target="_blank" rel="noopener">Economics of Transition (2022)</a>
+        · <a href="https://www.researchgate.net/publication/343877771_Technical_change_and_wage_premiums_amongst_skilled_labor_evidence_from_the_economic_transition" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://blogs.lse.ac.uk/europpblog/2022/05/11/western-sanctions-are-only-strengthening-putins-grip-on-power/" target="_blank" rel="noopener">EUROPP</a>
+        · <a href="https://www.dropbox.com/scl/fi/jd578w47vr4lsf34ucqlm/RU_PREM_GSOM.pdf?dl=0&amp;rlkey=t8ckfx7uj470wfbk66govsjzh" target="_blank" rel="noopener">Slides</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">
+        Changes in and correlates of Australian public attitudes toward illicit drug use
+        <span class="abs">Using the 2013, 2016 and 2019 National Drug Strategy Household Surveys, we show growing support for cannabis legalisation and less punitive responses for some drugs, while support for legalising heroin and methamphetamine remains low.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">Drug and Alcohol Review (2021)</a>
+        · <a href="https://www.researchgate.net/publication/357390147_Changes_in_and_correlates_of_Australian_public_attitudes_toward_illicit_drug_use" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://www.theguardian.com/australia-news/2021/dec/29/support-for-legalising-marijuana-in-australia-nearly-doubles-over-six-years" target="_blank" rel="noopener">The Guardian</a>
+        · <a href="https://www.forbes.com/sites/ajherrington/2021/12/29/support-for-marijuana-legalization-in-australia-nearly-doubles-in-six-years/?ref=altdnt" target="_blank" rel="noopener">Forbes</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1144231878" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.drugpo.2021.103399" target="_blank" rel="noopener">
+        The Australian ready-to-drink beverages tax missed its target age group
+        <span class="abs">Using HILDA with diff‑in‑diff and comparative interrupted time‑series, we find the 2008–09 “alcopops” tax did not reduce drinking among under‑25s but reduced consumption among adults—consistent with substitution among youth.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.drugpo.2021.103399" target="_blank" rel="noopener">International Journal of Drug Policy (2021)</a>
+        · <a href="https://www.researchgate.net/publication/345045309_The_Australian_ready-to-drink_beverages_tax_missed_its_target_age_group" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1437614229255716865" target="_blank" rel="noopener">X thread</a>
+        · <a href="https://www.austaxpolicy.com/australias-current-alcohol-tax-system-impedes-public-health-policy/" target="_blank" rel="noopener">Austaxpolicy</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1140408432" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://doi.org/10.1016/j.jhe.2020.101710" target="_blank" rel="noopener">
+        The role of imputed rents in intergenerational income mobility in three countries
+        <span class="abs">Including imputed rent as non‑cash income makes Australia appear ~22% less intergenerationally mobile, with little change for the US or Germany—warning that mobility comparisons depend on income definitions.</span>
+      </a>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jhe.2020.101710" target="_blank" rel="noopener">Journal of Housing Economics (2020)</a>
+        · <a href="https://www.researchgate.net/publication/342671632_The_Role_of_Imputed_Rents_in_Intergenerational_Income_Mobility_in_Three_Countries" target="_blank" rel="noopener">Post-print</a>
+        · <a href="https://twitter.com/SergeyVAlexeev/status/1429336180135325712?s=20" target="_blank" rel="noopener">X thread</a>
+        · <a href="https://cepr.org/voxeu/columns/comparing-effects-homeownership-intergenerational-income-mobility-us-germany-and" target="_blank" rel="noopener">VoxEU</a>
+        · <a href="https://www.austaxpolicy.com/covid-19-and-australias-housing-crisis-how-the-intergenerational-impact-can-go-undetected/" target="_blank" rel="noopener">Austaxpolicy</a>
+        · <a href="https://theconversation.com/yes-we-are-a-more-equal-society-than-most-but-not-quite-as-mobile-as-the-productivity-commission-suggests-heres-why-234804" target="_blank" rel="noopener">The Conversation</a>
+        · <a href="https://app.dimensions.ai/details/publication/pub.1128978508" target="_blank" rel="noopener">Dimensions</a>
+      </div>
+    </li>
+
+  </ul>
+
+  <h3>Other writing</h3>
+  <ul class="publist">
+    <li><a class="pub-title" href="https://data.rcsi.science/publications/news/147/" target="_blank" rel="noopener">Доказательная государственная политика: опыт Австралии</a></li>
+    <li><a class="pub-title" href="https://gsom.spbu.ru/students/blog/blog2017_02_13/" target="_blank" rel="noopener">Умом пощупать то, что глазами не увидеть</a></li>
+  </ul>
+</section>
+ -->
+
+<section id="consulting">
+  <h2>Consulting</h2>
+
+  <!-- <p>
+    I help organisations answer high-stakes, decision-facing questions with evidence that is transparent, defensible, and usable.
+    My consulting work combines economics, biostatistics, and health economics to evaluate policies, programs, and technologies—
+    from causal impact evaluation (trial-based and quasi-experimental) to economic evaluation (cost-effectiveness, cost–benefit,
+    budget impact) and clear decision briefs for non-technical audiences.
+  </p> -->
+
+  <p>
+    My background spans corporate finance and project delivery (Russia/France), economics (Canada), and a PhD in economics, and I now apply that toolkit in Australian public health and policy. Practically, that means I scope quickly, agree on the decision, comparators and assumptions up front, build a workable data strategy, and deliver decision-ready outputs. I’m comfortable working in secure data environments (including PLIDA) and maintain current access to commonly used Australian datasets (e.g., HILDA, LSAC), so projects can move from question → analysis → defensible write-up without hand-waving.
+  </p>
+
+  <p>
+    I also produce expert witness / independent expert reports for courts and tribunals, which keeps me grounded in what “stands up to scrutiny”: clear logic, transparent methods, careful interpretation, and sensitivity analysis that makes uncertainty explicit. Selected engagements include expert witness work for the Fair Work Commission (instructed by Piper Alderman and Citation Legal) and the Industrial Relations Commission of NSW (instructed by HWLE Lawyers), advisory input for Deloitte and Rennie Advisory, and cross-agency evaluation work with NSW Justice Health, Corrective Services NSW, and BOCSAR.
+  </p>
+
+  <p>
+If you’d like to discuss a project, you can begin with Sergey AI—a chat assistant built on my CV and past cover letters. It can answer questions about my background and approach and help clarify whether we’re a good fit. Or email me.
+  </p>
+</section>
+
+
+
+
+
+<!-- <section id="grants">
+  <h2>Proposed Grants</h2>
+
+  <ul class="publist">
+
+    <li>
+      <a class="pub-title" href="https://alexeev.pw/evidence/" target="_blank" rel="noopener">
+        EVIDENCE: Evaluating Interventions for Drug Epidemics—Net Community Effectiveness
+        <span class="abs">
+          This project will study how harm reduction programs—such as safe injection centres and needle exchanges—in Sydney and Melbourne affect health, safety, and wellbeing for everyone. We aim to find out what works best, for whom, and how to make drug policies fairer and more effective across Australia. All results will be openly shared to help communities, service providers, and policymakers make better decisions. Special focus will be given to young people and First Nations Australians.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/antyfk59wc2j7uoxjxe3p/Alexeev-IG-28.07.25.pdf?rlkey=5fua4d7oi5ql4llpa7xde2b0v&dl=0" target="_blank" rel="noopener">
+          Proposal under NHMRC Investigator grant
+
+        </a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://alexeev.pw/hope/" target="_blank" rel="noopener">
+        HOPE: Health Outcomes and Post-incarceration Evaluation
+        <span class="abs">
+          The HOPE project will find out how going to prison affects people’s health in Australia. We compare people sent to prison with those given community orders, using a research method that shows the true impact of prison. By working with Aboriginal leaders and people with lived experience, we aim to give clear answers to help improve health and justice policies. This evidence is urgently needed to address health gaps and support better outcomes for individuals, families, communities and the nation.
+        </span>
+      </a>
+
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/ui00w5pvt114qb3rypa01/HOPE_MRFF-EMCR2025_2051125_Proposal-Feedback.pdf?rlkey=b6zt70bb8agddwq72p841xlib&dl=0" target="_blank" rel="noopener">
+          Proposal under EMC MRFF
+        </a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/wldfqll1o0xtizy1brff3/OUTCOME-REJECTION.pdf?rlkey=8v778vdsle4qi4b8ik17jpq56&dl=0" target="_blank" rel="noopener">
+          Latest feedback
+        </a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.dropbox.com/scl/fi/flbwpv7wzsewi00zje0d4/DE260100996.pdf?dl=0&rlkey=0gsgln3akrkhg5r8yh8l5jx5o" target="_blank" rel="noopener">
+        CARE for stepped-wedge trials: negative weights and robust inference
+      </a>
+
+      <div class="pub-links">
+        <a href="https://www.dropbox.com/scl/fi/l1mbrr2b9huljxhtq71nv/DPEI270105538.pdf?rlkey=rib4alkuj6rzu3cpspcuimzju&dl=0" target="_blank" rel="noopener">
+          Proposal under ARC Discovery
+        </a>
+        ·
+        <a href="https://www.dropbox.com/scl/fi/nakf5aufpopua9athb980/Feedback-rejection.pdf?rlkey=9c9z602i2cl4pp27c4uvinp7r&dl=0" target="_blank" rel="noopener">
+          Latest feedback
+        </a>
+      </div>
+    </li>
+
+  </ul>
+</section> -->
+
+
+<section id="teaching">
+  <h2>Teaching</h2>
+  <ul>
+    <li><b>Intermediate Microeconomics</b> <span class="meta">(2017–2019)</span></li>
+    <li><b>Predictive Analytics</b> <span class="meta">(2015–2017)</span></li>
+    <li><b>Data Mining and Data Analysis</b> <span class="meta">(2015–2017)</span></li>
+    <li><b>Time Series Econometrics</b> <span class="meta">(2015–2017)</span></li>
+    <li><b>Macroeconomics / Global Governance / Macropolicies / Financial Intermediation</b> <span class="meta">(2014–2015)</span></li>
+    <li><b>Intro Micro / Intro Macro</b> <span class="meta">(2012–2013)</span></li>
+  </ul>
+</section>
+
+
+
+<footer>
+  <hr />
+  <div class="meta">Last updated: <span id="lu"></span></div>
+</footer>
+
+</div><!-- /.wrap -->
+</div><!-- /.layout -->
+
+<script>
+  const d = new Date(document.lastModified);
+  document.getElementById('lu').textContent = d.toISOString().slice(0,10);
+</script>
+
+<script>
+  (function () {
+    const nav = document.getElementById('sidenav');
+    const toggle = document.getElementById('nav-toggle');
+    const scrim = document.getElementById('nav-scrim');
+    const closeBtn = document.getElementById('nav-close');
+    if (!nav || !toggle || !scrim) return;
+
+    function openNav() {
+      nav.classList.add('open');
+      scrim.classList.add('open');
+      scrim.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('nav-open');
+    }
+
+    function closeNav() {
+      nav.classList.remove('open');
+      scrim.classList.remove('open');
+      scrim.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-open');
+    }
+
+    toggle.addEventListener('click', function () {
+      if (nav.classList.contains('open')) closeNav();
+      else openNav();
+    });
+
+    scrim.addEventListener('click', closeNav);
+    if (closeBtn) closeBtn.addEventListener('click', closeNav);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeNav();
+    });
+
+    nav.addEventListener('click', function (e) {
+      const a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) closeNav();
+    });
+  })();
+</script>
+
+<script>
+  // Only prevent navigation for pub titles that actually have an abstract preview card.
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest?.('.pub-title');
+    if (!el) return;
+
+    // Let normal clicks through for simple links (e.g., "Other writing")
+    const hasPreview = !!el.querySelector('.abs');
+    if (!hasPreview) return;
+
+    // Allow modifier-click to open in new tab / etc.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    // Clicking the link *should* just show the preview; don't navigate.
+    e.preventDefault();
+    el.focus?.();
+  }, true);
+</script>
+
+
+
+<!-- Ask Sergey AI -->
+<button id="chat-fab" type="button" aria-expanded="false">Ask Sergey AI</button>
+<div id="chat-scrim" hidden></div>
+
+<div id="chat-panel" hidden aria-hidden="true">
+  <div class="chat-head">
+    <div>Ask Sergey AI</div>
+    <button id="chat-close" type="button" aria-label="Close">×</button>
+  </div>
+
+  <div id="chat-log" role="log" aria-live="polite"></div>
+
+  <form id="chat-form" autocomplete="off">
+    <input id="chat-input" type="text" placeholder="Paste a role or project brief..." />
+    <button id="chat-send" type="submit">Send</button>
+  </form>
+
+  <div class="chat-foot">
+    Based on Sergey's CV and cover letters. If something’s missing, contact him.
+  </div>
+</div>
+
+<script>
+(() => {
+  const API_URL = "https://alexeev-website-chat.sergei-v-alexeev.workers.dev";
+
+  const fab = document.getElementById("chat-fab");
+  const scrim = document.getElementById("chat-scrim");
+  const panel = document.getElementById("chat-panel");
+  const closeBtn = document.getElementById("chat-close");
+  const log = document.getElementById("chat-log");
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("chat-input");
+
+  const messages = [];
+
+  function setOpen(isOpen){
+    panel.hidden = !isOpen;
+    panel.setAttribute("aria-hidden", String(!isOpen));
+    scrim.hidden = !isOpen;
+    fab.setAttribute("aria-expanded", String(isOpen));
+    document.body.classList.toggle("chat-open", isOpen);
+
+    if (isOpen) {
+      // let layout settle then focus
+      setTimeout(() => {
+        input.focus();
+        input.scrollIntoView({ block: "nearest" });
+      }, 50);
+
+      if (!messages.length) {
+        add("assistant",
+          "Paste a role or project brief. I’ll answer whether Sergey has done similar work and what he’d likely do.");
+      }
+    }
+  }
+
+  function add(role, text) {
+    messages.push({ role, content: text });
+
+    const div = document.createElement("div");
+    div.className = "chat-msg " + role;
+    div.textContent = text;
+
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  fab?.addEventListener("click", (e) => {
+    e.preventDefault();
+    setOpen(panel.hidden); // toggle
+  });
+
+  closeBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(false);
+  });
+
+  scrim?.addEventListener("click", () => setOpen(false));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    add("user", text);
+    input.value = "";
+
+    const placeholder = document.createElement("div");
+    placeholder.className = "chat-msg assistant";
+    placeholder.textContent = "…";
+    log.appendChild(placeholder);
+    log.scrollTop = log.scrollHeight;
+
+    try {
+      const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages }),
+      });
+
+      const data = await r.json();
+      placeholder.remove();
+      add("assistant", data.text || "(no response)");
+    } catch {
+      placeholder.remove();
+      add("assistant", "Error talking to server. Try again.");
+    }
+  });
+})();
+</script>
+
+
+</body>
+</html>
