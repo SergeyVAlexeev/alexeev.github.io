@@ -1,7 +1,8 @@
-name: Reorder research grants once
+name: Update grants content once
 
 on:
-  push:
+  pull_request_target:
+    types: [reopened]
 
 permissions:
   contents: write
@@ -15,7 +16,7 @@ jobs:
         with:
           ref: main
 
-      - name: Move and rename Grants
+      - name: Shorten heading and add AHURI
         shell: bash
         run: |
           python - <<'PY'
@@ -24,43 +25,45 @@ jobs:
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
 
-          grants_marker = '<section id="grants">\n  <h2>Proposed Grants</h2>'
-          assert grants_marker in text
-          gs = text.index(grants_marker)
+          old_heading = '<h2>Research program &amp; grants</h2>'
+          new_heading = '<h2>Research &amp; grants</h2>'
+          assert text.count(old_heading) == 1
+          text = text.replace(old_heading, new_heading, 1)
+
+          gs = text.index('<section id="grants">')
           ge = text.index('</section>', gs) + len('</section>')
           grants = text[gs:ge]
-          grants = grants.replace(
-              '<h2>Proposed Grants</h2>',
-              '<h2>Research program &amp; grants</h2>',
-              1,
-          )
+          assert 'AHURI: Community-led pathways to safe and appropriate housing in small remote First Nations communities' not in grants
 
-          text = text[:gs] + text[ge:]
+          revalue = 'REVALUE-AU: Revaluing Work and Evaluating Labour-market Adjustment in Australia'
+          rs = grants.index(revalue)
+          first_li_end = grants.index('</li>', rs) + len('</li>')
 
-          ims = text.index('<section id="impact">')
-          ime = text.index('</section>', ims) + len('</section>')
-          text = text[:ime] + '\n\n\n' + grants + text[ime:]
+          ahuri = '''
 
-          old_nav = '''    <a href="#impact">Impact <span>↵</span></a>
-    <a href="#collaboration">Collaboration <span>↵</span></a>
-    <a href="#consulting">Consulting <span>↵</span></a>
-    <a href="#grants">Grants <span>↵</span></a>'''
-          new_nav = '''    <a href="#impact">Impact <span>↵</span></a>
-    <a href="#grants">Grants <span>↵</span></a>
-    <a href="#collaboration">Collaboration <span>↵</span></a>
-    <a href="#consulting">Consulting <span>↵</span></a>'''
-          assert old_nav in text
-          text = text.replace(old_nav, new_nav, 1)
+    <li>
+      <span class="pub-title" tabindex="0" role="button">
+        AHURI: Community-led pathways to safe and appropriate housing in small remote First Nations communities
+        <span class="abs">
+          Working with small and remote First Nations communities, this project will identify community-prioritised pathways to safe, appropriate, energy-efficient, thermally resilient and maintainable housing that can inform national housing reform.
+        </span>
+      </span>
+      <div class="pub-meta">AHURI First Nations Research Project</div>
+    </li>'''
+
+          grants = grants[:first_li_end] + ahuri + grants[first_li_end:]
+          text = text[:gs] + grants + text[ge:]
 
           p.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit homepage change
+      - name: Commit homepage change and self-clean
         shell: bash
         run: |
-          test "$(git diff --name-only)" = "index.html"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/reorder-research-grants-once.yml
           git add index.html
-          git commit -m "Move research grants after impact"
+          test "$(git diff --cached --name-only | sort)" = $'.github/workflows/reorder-research-grants-once.yml\nindex.html'
+          git commit -m "Tighten grants heading and add AHURI project"
           git push origin HEAD:main
