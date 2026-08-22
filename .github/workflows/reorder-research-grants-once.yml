@@ -1,8 +1,8 @@
 name: Update grants content once
 
 on:
-  pull_request_target:
-    types: [synchronize]
+  push:
+    branches: [main]
 
 permissions:
   contents: write
@@ -63,7 +63,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm .github/workflows/reorder-research-grants-once.yml
+          if [ -f .github/site-one-shot-trigger.txt ]; then git rm .github/site-one-shot-trigger.txt; fi
           git add index.html
-          test "$(git diff --cached --name-only | sort)" = $'.github/workflows/reorder-research-grants-once.yml\nindex.html'
           git commit -m "Tighten grants heading and add AHURI project"
           git push origin HEAD:main
