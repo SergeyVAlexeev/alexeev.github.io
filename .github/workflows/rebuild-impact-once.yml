@@ -20,6 +20,10 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import base64
+
+          payload = 'PHNlY3Rpb24gaWQ9ImltcGFjdCI+CiAgPGgyPlNlbGVjdGVkIGltcGFjdDwvaDI+CgogIDx1bCBjbGFzcz0icHVibGlzdCI+CgogICAgPGxpPgogICAgICA8YSBjbGFzcz0icHViLXRpdGxlIiBocmVmPSJodHRwczovL2RvY3VtZW50cy5wYXJsaWFtZW50LnFsZC5nb3YuYXUvY29tL0pJQ1NDLUNEODIvRUFDQVRUU1NEQS03MDA0L3N1Ym1pc3Npb25zLzAwMDAwMTAzLnBkZiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPgogICAgICAgIEF1c3RyYWxpYW4gZHJ1Zy1kaXZlcnNpb24gcG9saWN5ICgyMDI2KQogICAgICAgIDxzcGFuIGNsYXNzPSJhYnMiPlVzaW5nIE5TVyBhZG1pbmlzdHJhdGl2ZSBkYXRhIGFuZCBxdWFzaS1yYW5kb20ganVkaWNpYWwgYXNzaWdubWVudCwgdGhlIHN0dWR5IGZvdW5kIG5vIG1lYXN1cmFibGUgZGV0ZXJyZW50IGVmZmVjdCBvZiBmaW5lcyBmb3IgaWxsaWNpdC1kcnVnIHVzZSBvciBwb3NzZXNzaW9uLiBRTkFEQSwgUXVJSE4gYW5kIFFBSUhDIGNpdGVkIGl0IGluIHN1Ym1pc3Npb25zIHRvIGEgUXVlZW5zbGFuZCBwYXJsaWFtZW50YXJ5IGNvbW1pdHRlZSBjb25zaWRlcmluZyBkcnVnLWRpdmVyc2lvbiBwb2xpY3kuPC9zcGFuPgogICAgICA8L2E+CiAgICAgIDxkaXYgY2xhc3M9InB1Yi1tZXRhIj5NeSBmaW5lcyBzdHVkeSB3YXMgY2l0ZWQgaW4gdGhyZWUgUXVlZW5zbGFuZCBwYXJsaWFtZW50YXJ5IHN1Ym1pc3Npb25zIHN1cHBvcnRpbmcgaGVhbHRoLW9yaWVudGVkIGFsdGVybmF0aXZlcyB0byBmaW5lcy48L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0icHViLWxpbmtzIj4KICAgICAgICA8YSBocmVmPSJodHRwczovL2RvaS5vcmcvMTAuMTAxNi9qLmplYm8uMjAyMi4wNi4wMTUiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5QYXBlcjwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL2RvY3VtZW50cy5wYXJsaWFtZW50LnFsZC5nb3YuYXUvY29tL0pJQ1NDLUNEODIvRUFDQVRUU1NEQS03MDA0L3N1Ym1pc3Npb25zLzAwMDAwMTAzLnBkZiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlFOQURBPC9hPgogICAgICAgIMK3IDxhIGhyZWY9Imh0dHBzOi8vZG9jdW1lbnRzLnBhcmxpYW1lbnQucWxkLmdvdi5hdS9jb20vSklDU0MtQ0Q4Mi9FQUNBVFRTU0RBLTcwMDQvc3VibWlzc2lvbnMvMDAwMDAxMjAucGRmIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+UXVJSE48L2E+CiAgICAgICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly9kb2N1bWVudHMucGFybGlhbWVudC5xbGQuZ292LmF1L2NvbS9KSUNTQy1DRDgyL0VBQ0FUVFNTREEtNzAwNC9zdWJtaXNzaW9ucy8wMDAwMDE0NS5wZGYiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5RQUlIQzwvYT4KICAgICAgPC9kaXY+CiAgICA8L2xpPgoKICAgIDxsaT4KICAgICAgPGEgY2xhc3M9InB1Yi10aXRsZSIgaHJlZj0iaHR0cHM6Ly93d3cuYXBoLmdvdi5hdS9Eb2N1bWVudFN0b3JlLmFzaHg/aWQ9NWNkYTk1ZWMtZTkzYi00MzExLWJlYjUtMjdmMTcyYjkzYzViJmFtcDtzdWJJZD03NTAwOTMiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj4KICAgICAgICBBdXN0cmFsaWFuIGNhbm5hYmlzLWxhdyByZWZvcm0gKDIwMjPigJMyNCkKICAgICAgICA8c3BhbiBjbGFzcz0iYWJzIj5UaGUgTmF0aW9uYWwgRHJ1ZyBhbmQgQWxjb2hvbCBSZXNlYXJjaCBDZW50cmUncyBzdWJtaXNzaW9uIGRyZXcgb24gbXkgcmVzZWFyY2ggb24gQXVzdHJhbGlhbiBwdWJsaWMgYXR0aXR1ZGVzIHRvd2FyZCBpbGxpY2l0IGRydWdzIGFuZCBvbiBmaW5lcyBmb3IgaWxsaWNpdC1kcnVnIG9mZmVuY2VzIHdoZW4gZGlzY3Vzc2luZyBsZWdhbGlzYXRpb24sIGRlY3JpbWluYWxpc2F0aW9uLCBhbmQgdGhlIGNvc3RzIG9mIGNyaW1pbmFsIHBlbmFsdGllcy48L3NwYW4+CiAgICAgIDwvYT4KICAgICAgPGRpdiBjbGFzcz0icHViLW1ldGEiPk5EQVJDIGNpdGVkIHR3byBvZiBteSBwYXBlcnMgaW4gaXRzIHN1Ym1pc3Npb24gdG8gdGhlIFNlbmF0ZSBpbnF1aXJ5IGludG8gdGhlIExlZ2FsaXNpbmcgQ2FubmFiaXMgQmlsbCAyMDIzLjwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJwdWItbGlua3MiPgogICAgICAgIDxhIGhyZWY9Imh0dHBzOi8vd3d3LmFwaC5nb3YuYXUvRG9jdW1lbnRTdG9yZS5hc2h4P2lkPTVjZGE5NWVjLWU5M2ItNDMxMS1iZWI1LTI3ZjE3MmI5M2M1YiZhbXA7c3ViSWQ9NzUwMDkzIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+U2VuYXRlIHN1Ym1pc3Npb248L2E+CiAgICAgICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly9kb2kub3JnLzEwLjExMTEvZGFyLjEzNDI2IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+UHVibGljLWF0dGl0dWRlcyBwYXBlcjwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL2RvaS5vcmcvMTAuMTAxNi9qLmplYm8uMjAyMi4wNi4wMTUiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5GaW5lcyBwYXBlcjwvYT4KICAgICAgPC9kaXY+CiAgICA8L2xpPgoKICAgIDxsaT4KICAgICAgPGEgY2xhc3M9InB1Yi10aXRsZSIgaHJlZj0iaHR0cHM6Ly93d3cuZ292LmllL2VuL2RlcGFydG1lbnQtb2YtaGVhbHRoL3ByZXNzLXJlbGVhc2VzL21pbmlzdGVyLW9mLXN0YXRlLWNvbG0tYnVya2UtZ3JhbnRzLWxpY2VuY2UtZm9yLWlyZWxhbmRzLWZpcnN0LXBpbG90LXN1cGVydmlzZWQtaW5qZWN0aW5nLWZhY2lsaXR5LWluLWR1Ymxpbi1jaXR5LWNlbnRyZS8iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj4KICAgICAgICBTdXBlcnZpc2VkIGluamVjdGluZyBwb2xpY3ksIElyZWxhbmQgKDIwMjPigJMyNCkKICAgICAgICA8c3BhbiBjbGFzcz0iYWJzIj5UaGUgUXVlZW7igJlzIFVuaXZlcnNpdHkgQmVsZmFzdC1sZWQgcmFwaWQgZXZpZGVuY2UgcmV2aWV3IGNpdGVzIG91ciBNZWxib3VybmUgc3R1ZHkgb24gbG9jYWwgaG91c2luZy1tYXJrZXQgZWZmZWN0cy4gSXJlbGFuZCdzIERlcGFydG1lbnQgb2YgSGVhbHRoIGxhdGVyIGlkZW50aWZpZWQgdGhlIHJldmlldyBhcyBwYXJ0IG9mIHRoZSByYXRpb25hbGUgZm9yIHRoZSBzdXBlcnZpc2VkIGluamVjdGluZyBmYWNpbGl0eSBtb2RlbCB3aGVuIGxpY2Vuc2luZyB0aGUgY291bnRyeSdzIGZpcnN0IHBpbG90IGZhY2lsaXR5Ljwvc3Bhbj4KICAgICAgPC9hPgogICAgICA8ZGl2IGNsYXNzPSJwdWItbWV0YSI+TXkgTWVsYm91cm5lIE1TSVIgaG91c2luZyBzdHVkeSB3YXMgY2l0ZWQgaW4gdGhlIFFVQiByYXBpZCBldmlkZW5jZSByZXZpZXcgbGF0ZXIgcmVmZXJlbmNlZCBieSBJcmVsYW5kJ3MgRGVwYXJ0bWVudCBvZiBIZWFsdGggaW4gdGhlIHJhdGlvbmFsZSBmb3IgaXRzIGZpcnN0IHBpbG90IHN1cGVydmlzZWQgaW5qZWN0aW5nIGZhY2lsaXR5LjwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJwdWItbGlua3MiPgogICAgICAgIDxhIGhyZWY9Imh0dHBzOi8vd3d3Lmdvdi5pZS9lbi9kZXBhcnRtZW50LW9mLWhlYWx0aC9wcmVzcy1yZWxlYXNlcy9taW5pc3Rlci1vZi1zdGF0ZS1jb2xtLWJ1cmtlLWdyYW50cy1saWNlbmNlLWZvci1pcmVsYW5kcy1maXJzdC1waWxvdC1zdXBlcnZpc2VkLWluamVjdGluZy1mYWNpbGl0eS1pbi1kdWJsaW4tY2l0eS1jZW50cmUvIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+SXJpc2ggRGVwYXJ0bWVudCBvZiBIZWFsdGg8L2E+CiAgICAgICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly93d3cuZHJ1Z3NhbmRhbGNvaG9sLmllLzM5OTI5LzEvRFNfT3ZlcmRvc2VfcHJldmVudGlvbl9jZW50cmVzX1JlcG9ydC5wZGYiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5RVUIgcmFwaWQgZXZpZGVuY2UgcmV2aWV3PC9hPgogICAgICAgIMK3IDxhIGhyZWY9Imh0dHBzOi8vZG9pLm9yZy8xMC4xMDE2L2oucmVnc2NpdXJiZWNvLjIwMjIuMTAzODU2IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+UGFwZXI8L2E+CiAgICAgIDwvZGl2PgogICAgPC9saT4KCiAgPC91bD4KPC9zZWN0aW9uPgoKCg=='
+          new = base64.b64decode(payload).decode('utf-8')
 
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
@@ -29,72 +33,11 @@ jobs:
           assert text.count(end_marker) == 1
           start = text.index(start_marker)
           end = text.index(end_marker, start)
-          prefix = text[:start]
-          tail = text[end:]
           old = text[start:end]
           assert 'Australian drug-diversion policy (2026)' in old
-          assert 'QNADA submission' in old
-          assert 'QuIHN submission' in old
-          assert 'QAIHC submission' in old
-
-          new = '''<section id="impact">
-  <h2>Selected impact</h2>
-
-  <ul class="publist">
-
-    <li>
-      <a class="pub-title" href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">
-        Australian drug-diversion policy (2026)
-        <span class="abs">Using NSW administrative data and quasi-random judicial assignment, the study found no measurable deterrent effect of fines for illicit-drug use or possession. QNADA, QuIHN and QAIHC cited it in submissions to a Queensland parliamentary committee considering drug-diversion policy.</span>
-      </a>
-      <div class="pub-meta">My fines study was cited in three Queensland parliamentary submissions supporting health-oriented alternatives to fines.</div>
-      <div class="pub-links">
-        <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Paper</a>
-        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">QNADA</a>
-        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000120.pdf" target="_blank" rel="noopener">QuIHN</a>
-        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000145.pdf" target="_blank" rel="noopener">QAIHC</a>
-      </div>
-    </li>
-
-    <li>
-      <a class="pub-title" href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">
-        Australian cannabis-law reform (2023–24)
-        <span class="abs">The National Drug and Alcohol Research Centre's submission drew on my research on Australian public attitudes toward illicit drugs and on fines for illicit-drug offences when discussing legalisation, decriminalisation, and the costs of criminal penalties.</span>
-      </a>
-      <div class="pub-meta">NDARC cited two of my papers in its submission to the Senate inquiry into the Legalising Cannabis Bill 2023.</div>
-      <div class="pub-links">
-        <a href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">Senate submission</a>
-        · <a href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">Public-attitudes paper</a>
-        · <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Fines paper</a>
-      </div>
-    </li>
-
-    <li>
-      <a class="pub-title" href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">
-        Supervised injecting policy, Ireland (2023–24)
-        <span class="abs">The Queen’s University Belfast-led rapid evidence review cites our Melbourne study on local housing-market effects. Ireland's Department of Health later identified the review as part of the rationale for the supervised injecting facility model when licensing the country's first pilot facility.</span>
-      </a>
-      <div class="pub-meta">My Melbourne MSIR housing study was cited in the QUB rapid evidence review later referenced by Ireland's Department of Health in the rationale for its first pilot supervised injecting facility.</div>
-      <div class="pub-links">
-        <a href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">Irish Department of Health</a>
-        · <a href="https://www.drugsandalcohol.ie/39929/1/DS_Overdose_prevention_centres_Report.pdf" target="_blank" rel="noopener">QUB rapid evidence review</a>
-        · <a href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">Paper</a>
-      </div>
-    </li>
-
-  </ul>
-</section>
-
-
-'''
-
-          updated = prefix + new + tail
-          assert updated.startswith(prefix)
-          assert updated.endswith(tail)
-          assert updated.count('<section id="impact">') == 1
-          assert updated.count('<section id="collaboration">') == 1
-          assert 'Australian cannabis-law reform (2023–24)' in updated
-          assert 'Supervised injecting policy, Ireland (2023–24)' in updated
+          updated = text[:start] + new + text[end:]
+          assert updated[:start] == text[:start]
+          assert updated.endswith(text[end:])
           p.write_text(updated, encoding='utf-8')
           PY
 
