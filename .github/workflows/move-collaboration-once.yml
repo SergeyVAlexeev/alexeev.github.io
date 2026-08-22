@@ -2,7 +2,7 @@ name: Move collaboration to contact position once
 
 on:
   schedule:
-    - cron: "54 18 * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
