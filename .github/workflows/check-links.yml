@@ -1,17 +1,56 @@
 name: Check links
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-links.yml'
   workflow_dispatch:
   schedule:
     - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  link-check:
+  collaboration-cleanup:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
 
+      - name: Remove redundant expert-work sentence
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = ' My work spans econometrics, biostatistics, epidemiology, and health economics. I also do expert witness / independent expert reports for courts and tribunals, which keeps me grounded in what “decision-ready” evidence looks like.'
+          new = ' My work spans econometrics, biostatistics, epidemiology, and health economics.'
+          assert text.count(old) == 1, 'target sentence mismatch'
+          text = text.replace(old, new, 1)
+          assert 'I also do expert witness / independent expert reports for courts and tribunals' not in text
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Restore workflow and commit homepage only
+        shell: bash
+        run: |
+          git show HEAD^:.github/workflows/check-links.yml > .github/workflows/check-links.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/check-links.yml
+          git diff --cached --check
+          git commit -m "Remove redundant expert-work sentence from Collaboration"
+          git push origin HEAD:main
+
+  link-check:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
     steps:
       - name: Check live website links
         uses: lycheeverse/lychee-action@v2
