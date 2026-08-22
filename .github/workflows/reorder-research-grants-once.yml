@@ -1,8 +1,7 @@
 name: Reorder research grants once
 
 on:
-  pull_request_target:
-    types: [opened]
+  push:
 
 permissions:
   contents: write
