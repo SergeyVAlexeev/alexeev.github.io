@@ -1,15 +1,15 @@
 name: Apply Collaboration contact move once
 
 on:
-  issues:
-    types: [opened]
+  push:
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   update-homepage:
-    if: github.event.issue.title == 'apply-collaboration-contact-v2-20260823'
+    if: github.event.head_commit.message == 'Arm Collaboration contact updater'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
