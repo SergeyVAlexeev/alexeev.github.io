@@ -474,13 +474,13 @@ body.nav-open{
 
     
 /* About: image + text side-by-side */
-.about-row{display:flex; gap:24px; align-items:flex-start;}
+.about-row{display:flex; flex-direction:column; gap:14px; align-items:flex-start;}
 
 /* Nudge photo down slightly */
-.about-pic{width:240px; height:auto; border-radius:6px; flex-shrink:0; margin-top:10px;}
+.about-pic{width:240px; height:auto; border-radius:6px; flex-shrink:0; margin-top:0; order:1;}
 
 /* About text: no vertical divider */
-.about-text{min-width:0; padding:0;}
+.about-text{min-width:0; padding:0; order:2;}
 
 /* About handles: no horizontal rule */
 .about-handles{margin-top:14px; padding-top:0; border-top:none;}

@@ -1,1 +1,0 @@
-Trigger one-shot About portrait stack update.
