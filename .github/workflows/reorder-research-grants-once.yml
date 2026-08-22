@@ -1,7 +1,8 @@
 name: Reorder research grants once
 
 on:
-  push:
+  pull_request_target:
+    types: [opened]
 
 permissions:
   contents: write
@@ -35,10 +36,8 @@ jobs:
               1,
           )
 
-          # Remove only that active block.
           text = text[:gs] + text[ge:]
 
-          # Insert immediately after active Impact.
           ims = text.index('<section id="impact">')
           ime = text.index('</section>', ims) + len('</section>')
           text = text[:ime] + '\n\n\n' + grants + text[ime:]
