@@ -20,7 +20,6 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib
           import re
 
           p = Path('index.html')
@@ -56,10 +55,7 @@ jobs:
               1,
           )
 
-          # Remove only the active Grants block from its current location.
           without_grants = text[:grants_start] + text[grants_end:]
-
-          # Insert that same block, with only its heading renamed, immediately after Impact.
           impact_start, impact_end = section_span(without_grants, 'impact')
           updated = without_grants[:impact_end] + '\n\n\n' + grants_renamed + without_grants[impact_end:]
 
@@ -80,15 +76,10 @@ jobs:
           assert updated.count(old_nav) == 1, f'expected one active nav sequence, found {updated.count(old_nav)}'
           updated = updated.replace(old_nav, new_nav, 1)
 
-          # Guard the sections the user explicitly asked us not to edit.
           assert section_bytes(updated, 'collaboration') == collaboration_before
           assert section_bytes(updated, 'consulting') == consulting_before
+          assert section_bytes(updated, 'grants') == grants_renamed
 
-          # Guard Grants content: only its heading may differ.
-          moved_grants = section_bytes(updated, 'grants')
-          assert moved_grants == grants_renamed
-
-          # Verify active page order.
           order = ['about', 'publications', 'impact', 'grants', 'collaboration', 'consulting', 'teaching']
           positions = [section_span(updated, sid)[0] for sid in order]
           assert positions == sorted(positions), positions
@@ -105,3 +96,5 @@ jobs:
           git add index.html
           git commit -m "Move research grants after impact"
           git push origin HEAD:main
+
+# one-shot trigger
