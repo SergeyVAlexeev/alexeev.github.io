@@ -2,14 +2,13 @@ name: Rebuild Impact section once
 
 on:
   push:
-    paths:
-      - '.github/workflows/rebuild-impact-once.yml'
 
 permissions:
   contents: write
 
 jobs:
   update-impact:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -108,5 +107,3 @@ jobs:
           git add index.html
           git commit -m "Expand and restyle Selected Impact"
           git push origin HEAD:main
-
-# one-shot trigger
