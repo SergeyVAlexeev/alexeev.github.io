@@ -1,0 +1,55 @@
+name: Stack About portrait once
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-homepage:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Stack portrait above About copy
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          old_row = '.about-row{display:flex; gap:24px; align-items:flex-start;}'
+          new_row = '.about-row{display:flex; flex-direction:column; gap:14px; align-items:flex-start;}'
+          assert text.count(old_row) == 1
+          text = text.replace(old_row, new_row, 1)
+
+          old_pic = '.about-pic{width:240px; height:auto; border-radius:6px; flex-shrink:0; margin-top:10px;}'
+          new_pic = '.about-pic{width:240px; height:auto; border-radius:6px; flex-shrink:0; margin-top:0; order:1;}'
+          assert text.count(old_pic) == 1
+          text = text.replace(old_pic, new_pic, 1)
+
+          old_text = '.about-text{min-width:0; padding:0;}'
+          new_text = '.about-text{min-width:0; padding:0; order:2;}'
+          assert text.count(old_text) == 1
+          text = text.replace(old_text, new_text, 1)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit homepage change and self-clean
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/about-stack-once.yml
+          if [ -f .github/about-stack-trigger.txt ]; then git rm .github/about-stack-trigger.txt; fi
+          git add index.html
+          git commit -m "Stack portrait above About copy"
+          git push origin HEAD:main
