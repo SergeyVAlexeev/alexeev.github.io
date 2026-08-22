@@ -1,0 +1,1 @@
+Trigger Collaboration contact move via pull request.
