@@ -29,23 +29,7 @@ jobs:
           assert text.count(start_marker) == 1, 'consulting marker mismatch'
           start = text.index(start_marker)
           end = text.index(end_marker, start) + len(end_marker)
-          new = '''<section id="consulting">
-  <h2>Expert &amp; consulting work</h2>
-
-  <ul class="publist">
-    <li>
-      <span class="pub-title">Fair Work Commission</span>
-      <div class="pub-meta">Expert economic and statistical evidence in an award-variation proceeding.</div>
-      <div class="pub-links">Instructed by Piper Alderman and Citation Legal.</div>
-    </li>
-
-    <li>
-      <span class="pub-title">NSW Industrial Relations Commission</span>
-      <div class="pub-meta">Expert economic evidence in the Visiting Medical Officers arbitration.</div>
-      <div class="pub-links">Instructed by HWLE Lawyers.</div>
-    </li>
-  </ul>
-</section>'''
+          new = '<section id="consulting">\n  <h2>Expert &amp; consulting work</h2>\n\n  <ul class="publist">\n    <li>\n      <span class="pub-title">Fair Work Commission</span>\n      <div class="pub-meta">Expert economic and statistical evidence in an award-variation proceeding.</div>\n      <div class="pub-links">Instructed by Piper Alderman and Citation Legal.</div>\n    </li>\n\n    <li>\n      <span class="pub-title">NSW Industrial Relations Commission</span>\n      <div class="pub-meta">Expert economic evidence in the Visiting Medical Officers arbitration.</div>\n      <div class="pub-links">Instructed by HWLE Lawyers.</div>\n    </li>\n  </ul>\n</section>'
           text = text[:start] + new + text[end:]
           assert text.count('<h2>Expert &amp; consulting work</h2>') == 1
           assert 'My background spans corporate finance' not in text
@@ -64,5 +48,3 @@ jobs:
           git diff --cached --check
           git commit -m "Tighten expert and consulting work"
           git push origin HEAD:main
-
-# armed
