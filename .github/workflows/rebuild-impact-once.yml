@@ -1,0 +1,110 @@
+name: Rebuild Impact section once
+
+on:
+  push:
+    paths:
+      - '.github/workflows/rebuild-impact-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-impact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Replace Impact section only
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          start_marker = '<section id="impact">'
+          end_marker = '<section id="collaboration">'
+          assert text.count(start_marker) == 1
+          assert text.count(end_marker) == 1
+          start = text.index(start_marker)
+          end = text.index(end_marker, start)
+          prefix = text[:start]
+          tail = text[end:]
+          old = text[start:end]
+          assert 'Australian drug-diversion policy (2026)' in old
+          assert 'QNADA submission' in old
+          assert 'QuIHN submission' in old
+          assert 'QAIHC submission' in old
+
+          new = '''<section id="impact">
+  <h2>Selected impact</h2>
+
+  <ul class="publist">
+
+    <li>
+      <a class="pub-title" href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">
+        Australian drug-diversion policy (2026)
+        <span class="abs">Using NSW administrative data and quasi-random judicial assignment, the study found no measurable deterrent effect of fines for illicit-drug use or possession. QNADA, QuIHN and QAIHC cited it in submissions to a Queensland parliamentary committee considering drug-diversion policy.</span>
+      </a>
+      <div class="pub-meta">My fines study was cited in three Queensland parliamentary submissions supporting health-oriented alternatives to fines.</div>
+      <div class="pub-links">
+        <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Paper</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000103.pdf" target="_blank" rel="noopener">QNADA</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000120.pdf" target="_blank" rel="noopener">QuIHN</a>
+        · <a href="https://documents.parliament.qld.gov.au/com/JICSC-CD82/EACATTSSDA-7004/submissions/00000145.pdf" target="_blank" rel="noopener">QAIHC</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">
+        Australian cannabis-law reform (2023–24)
+        <span class="abs">The National Drug and Alcohol Research Centre's submission drew on my research on Australian public attitudes toward illicit drugs and on fines for illicit-drug offences when discussing legalisation, decriminalisation, and the costs of criminal penalties.</span>
+      </a>
+      <div class="pub-meta">NDARC cited two of my papers in its submission to the Senate inquiry into the Legalising Cannabis Bill 2023.</div>
+      <div class="pub-links">
+        <a href="https://www.aph.gov.au/DocumentStore.ashx?id=5cda95ec-e93b-4311-beb5-27f172b93c5b&amp;subId=750093" target="_blank" rel="noopener">Senate submission</a>
+        · <a href="https://doi.org/10.1111/dar.13426" target="_blank" rel="noopener">Public-attitudes paper</a>
+        · <a href="https://doi.org/10.1016/j.jebo.2022.06.015" target="_blank" rel="noopener">Fines paper</a>
+      </div>
+    </li>
+
+    <li>
+      <a class="pub-title" href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">
+        Supervised injecting policy, Ireland (2023–24)
+        <span class="abs">The Queen’s University Belfast-led rapid evidence review cites our Melbourne study on local housing-market effects. Ireland's Department of Health later identified the review as part of the rationale for the supervised injecting facility model when licensing the country's first pilot facility.</span>
+      </a>
+      <div class="pub-meta">My Melbourne MSIR housing study was cited in the QUB rapid evidence review later referenced by Ireland's Department of Health in the rationale for its first pilot supervised injecting facility.</div>
+      <div class="pub-links">
+        <a href="https://www.gov.ie/en/department-of-health/press-releases/minister-of-state-colm-burke-grants-licence-for-irelands-first-pilot-supervised-injecting-facility-in-dublin-city-centre/" target="_blank" rel="noopener">Irish Department of Health</a>
+        · <a href="https://www.drugsandalcohol.ie/39929/1/DS_Overdose_prevention_centres_Report.pdf" target="_blank" rel="noopener">QUB rapid evidence review</a>
+        · <a href="https://doi.org/10.1016/j.regsciurbeco.2022.103856" target="_blank" rel="noopener">Paper</a>
+      </div>
+    </li>
+
+  </ul>
+</section>
+
+
+'''
+
+          updated = prefix + new + tail
+          assert updated.startswith(prefix)
+          assert updated.endswith(tail)
+          assert updated.count('<section id="impact">') == 1
+          assert updated.count('<section id="collaboration">') == 1
+          assert 'Australian cannabis-law reform (2023–24)' in updated
+          assert 'Supervised injecting policy, Ireland (2023–24)' in updated
+          p.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Commit Impact section
+        shell: bash
+        run: |
+          test "$(git diff --name-only)" = "index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Expand and restyle Selected Impact"
+          git push origin HEAD:main
