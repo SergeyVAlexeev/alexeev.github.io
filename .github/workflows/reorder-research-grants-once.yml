@@ -2,7 +2,7 @@ name: Update grants content once
 
 on:
   pull_request_target:
-    types: [reopened]
+    types: [synchronize]
 
 permissions:
   contents: write
