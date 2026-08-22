@@ -1,25 +1,32 @@
 ---
 ---
 {% capture original %}{% include_relative index-source.html %}{% endcapture %}
-{% capture collaboration_patch %}
-<script>
-(() => {
-  const collaboration = document.getElementById('collaboration');
-  const teaching = document.getElementById('teaching');
-  if (collaboration && teaching) {
-    const heading = collaboration.querySelector('h2');
-    if (heading) heading.textContent = 'Collaboration & contact';
-    teaching.insertAdjacentElement('afterend', collaboration);
-  }
 
-  const nav = document.getElementById('sidenav');
-  const collaborationLink = nav?.querySelector('a[href="#collaboration"]');
-  const teachingLink = nav?.querySelector('a[href="#teaching"]');
-  if (collaborationLink && teachingLink) {
-    teachingLink.insertAdjacentElement('afterend', collaborationLink);
-  }
-})();
-</script>
-</body>
-{% endcapture %}
-{{ original | replace: '</body>', collaboration_patch }}
+{% assign collab_split = original | split: '<section id="collaboration">' %}
+{% assign collab_rest = collab_split[1] %}
+{% assign collab_end_split = collab_rest | split: '</section>' %}
+{% assign collab_inner = collab_end_split[0] %}
+{% capture collab_section %}<section id="collaboration">{{ collab_inner }}</section>{% endcapture %}
+{% assign without_collab = original | remove_first: collab_section %}
+{% assign collab_section = collab_section | replace: '<h2>Collaboration</h2>', '<h2>Collaboration &amp; contact</h2>' %}
+
+{% assign teaching_split = without_collab | split: '<section id="teaching">' %}
+{% assign teaching_rest = teaching_split[1] %}
+{% assign teaching_end_split = teaching_rest | split: '</section>' %}
+{% assign teaching_inner = teaching_end_split[0] %}
+{% capture teaching_section %}<section id="teaching">{{ teaching_inner }}</section>{% endcapture %}
+{% capture teaching_and_collab %}{{ teaching_section }}
+
+{{ collab_section }}{% endcapture %}
+{% assign reordered = without_collab | replace: teaching_section, teaching_and_collab %}
+
+{% capture nav_old %}    <a href="#grants">Grants <span>↵</span></a>
+    <a href="#collaboration">Collaboration <span>↵</span></a>
+    <a href="#consulting">Consulting <span>↵</span></a>
+    <a href="#teaching">Teaching <span>↵</span></a>{% endcapture %}
+{% capture nav_new %}    <a href="#grants">Grants <span>↵</span></a>
+    <a href="#consulting">Consulting <span>↵</span></a>
+    <a href="#teaching">Teaching <span>↵</span></a>
+    <a href="#collaboration">Collaboration <span>↵</span></a>{% endcapture %}
+
+{{ reordered | replace: nav_old, nav_new }}
