@@ -1,0 +1,107 @@
+name: Reorder research grants once
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  update-homepage:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Move and rename grants section only
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          def section_span(src, section_id):
+              m = re.search(rf'(?m)^<section id="{re.escape(section_id)}">\n', src)
+              assert m, f'missing active section: {section_id}'
+              end = src.find('</section>', m.start())
+              assert end != -1, f'missing section close: {section_id}'
+              end += len('</section>')
+              return m.start(), end
+
+          def section_bytes(src, section_id):
+              a, b = section_span(src, section_id)
+              return src[a:b]
+
+          collaboration_before = section_bytes(text, 'collaboration')
+          consulting_before = section_bytes(text, 'consulting')
+
+          grants_start, grants_end = section_span(text, 'grants')
+          grants = text[grants_start:grants_end]
+          assert grants.count('<h2>Proposed Grants</h2>') == 1
+          assert 'REVALUE-AU:' in grants
+          assert 'EVIDENCE:' in grants
+          assert 'HOPE:' in grants
+          assert 'FAMILY:' in grants
+          assert 'CARE-SW' in grants
+
+          grants_renamed = grants.replace(
+              '<h2>Proposed Grants</h2>',
+              '<h2>Research program &amp; grants</h2>',
+              1,
+          )
+
+          # Remove only the active Grants block from its current location.
+          without_grants = text[:grants_start] + text[grants_end:]
+
+          # Insert that same block, with only its heading renamed, immediately after Impact.
+          impact_start, impact_end = section_span(without_grants, 'impact')
+          updated = without_grants[:impact_end] + '\n\n\n' + grants_renamed + without_grants[impact_end:]
+
+          old_nav = '''    <a href="#about">About <span>↵</span></a>
+    <a href="#publications">Publications <span>↵</span></a>
+    <a href="#impact">Impact <span>↵</span></a>
+    <a href="#collaboration">Collaboration <span>↵</span></a>
+    <a href="#consulting">Consulting <span>↵</span></a>
+    <a href="#grants">Grants <span>↵</span></a>
+    <a href="#teaching">Teaching <span>↵</span></a>'''
+          new_nav = '''    <a href="#about">About <span>↵</span></a>
+    <a href="#publications">Publications <span>↵</span></a>
+    <a href="#impact">Impact <span>↵</span></a>
+    <a href="#grants">Grants <span>↵</span></a>
+    <a href="#collaboration">Collaboration <span>↵</span></a>
+    <a href="#consulting">Consulting <span>↵</span></a>
+    <a href="#teaching">Teaching <span>↵</span></a>'''
+          assert updated.count(old_nav) == 1, f'expected one active nav sequence, found {updated.count(old_nav)}'
+          updated = updated.replace(old_nav, new_nav, 1)
+
+          # Guard the sections the user explicitly asked us not to edit.
+          assert section_bytes(updated, 'collaboration') == collaboration_before
+          assert section_bytes(updated, 'consulting') == consulting_before
+
+          # Guard Grants content: only its heading may differ.
+          moved_grants = section_bytes(updated, 'grants')
+          assert moved_grants == grants_renamed
+
+          # Verify active page order.
+          order = ['about', 'publications', 'impact', 'grants', 'collaboration', 'consulting', 'teaching']
+          positions = [section_span(updated, sid)[0] for sid in order]
+          assert positions == sorted(positions), positions
+
+          p.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Commit homepage change
+        shell: bash
+        run: |
+          test "$(git diff --name-only)" = "index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Move research grants after impact"
+          git push origin HEAD:main
