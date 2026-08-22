@@ -1,1 +1,1 @@
-Trigger one-shot Collaboration move.
+Trigger one-shot Collaboration move, retry.
