@@ -1,1 +1,1 @@
-Temporary trigger for the one-shot homepage Grants reorder. Safe to remove after the workflow runs.
+Temporary trigger for the homepage grants content update. Safe to remove after the workflow runs.
