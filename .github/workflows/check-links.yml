@@ -1,28 +1,47 @@
-name: Check links
+name: Apply Teaching list styling once
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-links.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  link-check:
+  update-homepage:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check live website links
-        uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@v4
         with:
-          fail: true
-          args: >
-            --verbose
-            --no-progress
-            --method get
-            --max-retries 1
-            --max-concurrency 4
-            --accept "100..=103,200..=299,403,405,429,999"
-            "https://www.alexeev.pw/"
-            "https://www.alexeev.pw/hope/"
+          ref: main
+
+      - name: Style Teaching list
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = '<section id="teaching">\n  <h2>Teaching</h2>\n  <ul>'
+          new = '<section id="teaching">\n  <h2>Teaching</h2>\n  <ul class="publist">'
+          assert text.count(old) == 1, 'teaching marker mismatch'
+          text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Restore link checker and commit homepage
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          original = 'name: Check links\n\non:\n  workflow_dispatch:\n  schedule:\n    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC\n\npermissions:\n  contents: read\n\njobs:\n  link-check:\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Check live website links\n        uses: lycheeverse/lychee-action@v2\n        with:\n          fail: true\n          args: >\n            --verbose\n            --no-progress\n            --method get\n            --max-retries 1\n            --max-concurrency 4\n            --accept "100..=103,200..=299,403,405,429,999"\n            "https://www.alexeev.pw/"\n            "https://www.alexeev.pw/hope/"\n'
+          Path('.github/workflows/check-links.yml').write_text(original, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/check-links.yml
+          git diff --cached --check
+          git commit -m "Match Teaching list styling"
+          git push origin HEAD:main
