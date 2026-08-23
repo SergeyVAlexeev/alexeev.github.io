@@ -1,55 +1,28 @@
-name: One-shot impact refresh
+name: Check links
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  patch-impact:
+  link-check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Check live website links
+        uses: lycheeverse/lychee-action@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Patch impact section
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64
-          p = Path("index.html")
-          s = p.read_text(encoding="utf-8")
-          before, rest = s.split('<section id="impact">', 1)
-          _, after = rest.split('<section id="grants">', 1)
-          replacements = [
-              ('https://doi.org/10.1016/j.ijnurstu.2024.104690', 'pub-encore'),
-              ('https://doi.org/10.1016/j.regsciurbeco.2022.103856', 'pub-msir'),
-              ('https://doi.org/10.1016/j.jebo.2022.06.015', 'pub-fines'),
-              ('https://doi.org/10.1111/dar.13426', 'pub-attitudes'),
-          ]
-          for href, ident in replacements:
-              old = '    <li>\n      <a class="pub-title" href="' + href + '"'
-              new = '    <li id="' + ident + '">\n      <a class="pub-title" href="' + href + '"'
-              if before.count(old) != 1:
-                  raise SystemExit(f"Expected one active publication card for {href}, found {before.count(old)}")
-              before = before.replace(old, new, 1)
-          impact = base64.b64decode("PHNlY3Rpb24gaWQ9ImltcGFjdCI+CiAgPGgyPlNlbGVjdGVkIGltcGFjdDwvaDI+CgogIDx1bCBjbGFzcz0icHVibGlzdCI+CgogICAgPGxpPgogICAgICA8c3BhbiBjbGFzcz0icHViLW1haW4iPkRydWctZGl2ZXJzaW9uIHBvbGljeSwgUXVlZW5zbGFuZCAoMjAyNik8L3NwYW4+CiAgICAgIDxkaXYgY2xhc3M9InB1Yi1tZXRhIj5NeSBmaW5lcyBzdHVkeSB3YXMgY2l0ZWQgaW4gdGhyZWUgUXVlZW5zbGFuZCBwYXJsaWFtZW50YXJ5IHN1Ym1pc3Npb25zIHN1cHBvcnRpbmcgaGVhbHRoLW9yaWVudGVkIGFsdGVybmF0aXZlcyB0byBmaW5lcy48L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0icHViLWxpbmtzIj4KICAgICAgICA8YSBocmVmPSIjcHViLWZpbmVzIj5QYXBlciDihpE8L2E+CiAgICAgICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly9kb2N1bWVudHMucGFybGlhbWVudC5xbGQuZ292LmF1L2NvbS9KSUNTQy1DRDgyL0VBQ0FUVFNTREEtNzAwNC9zdWJtaXNzaW9ucy8wMDAwMDEwMy5wZGYiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5RTkFEQTwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL2RvY3VtZW50cy5wYXJsaWFtZW50LnFsZC5nb3YuYXUvY29tL0pJQ1NDLUNEODIvRUFDQVRUU1NEQS03MDA0L3N1Ym1pc3Npb25zLzAwMDAwMTIwLnBkZiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlF1SUhOPC9hPgogICAgICAgIMK3IDxhIGhyZWY9Imh0dHBzOi8vZG9jdW1lbnRzLnBhcmxpYW1lbnQucWxkLmdvdi5hdS9jb20vSklDU0MtQ0Q4Mi9FQUNBVFRTU0RBLTcwMDQvc3VibWlzc2lvbnMvMDAwMDAxNDUucGRmIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+UUFJSEM8L2E+CiAgICAgIDwvZGl2PgogICAgPC9saT4KCiAgICA8bGk+CiAgICAgIDxzcGFuIGNsYXNzPSJwdWItbWFpbiI+Q2FubmFiaXMtbGF3IHJlZm9ybSwgQXVzdHJhbGlhICgyMDIz4oCTMjQpPC9zcGFuPgogICAgICA8ZGl2IGNsYXNzPSJwdWItbWV0YSI+TkRBUkMgY2l0ZWQgdHdvIG9mIG15IHN0dWRpZXMgaW4gaXRzIHN1Ym1pc3Npb24gdG8gdGhlIFNlbmF0ZSBpbnF1aXJ5IGludG8gdGhlIExlZ2FsaXNpbmcgQ2FubmFiaXMgQmlsbCAyMDIzLjwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJwdWItbGlua3MiPgogICAgICAgIDxhIGhyZWY9IiNwdWItYXR0aXR1ZGVzIj5BdHRpdHVkZXMgcGFwZXIg4oaRPC9hPgogICAgICAgIMK3IDxhIGhyZWY9IiNwdWItZmluZXMiPkZpbmVzIHBhcGVyIOKGkTwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5hcGguZ292LmF1L0RvY3VtZW50U3RvcmUuYXNoeD9pZD01Y2RhOTVlYy1lOTNiLTQzMTEtYmViNS0yN2YxNzJiOTNjNWImYW1wO3N1YklkPTc1MDA5MyIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlNlbmF0ZSBzdWJtaXNzaW9uPC9hPgogICAgICA8L2Rpdj4KICAgIDwvbGk+CgogICAgPGxpPgogICAgICA8c3BhbiBjbGFzcz0icHViLW1haW4iPlN1cGVydmlzZWQgaW5qZWN0aW5nIHBvbGljeSwgSXJlbGFuZCAoMjAyM+KAkzI0KTwvc3Bhbj4KICAgICAgPGRpdiBjbGFzcz0icHViLW1ldGEiPk15IE1lbGJvdXJuZSBNU0lSIGhvdXNpbmcgc3R1ZHkgd2FzIGNpdGVkIGluIHRoZSBRVUIgcmFwaWQgZXZpZGVuY2UgcmV2aWV3IGxhdGVyIHJlZmVyZW5jZWQgYnkgSXJlbGFuZCdzIERlcGFydG1lbnQgb2YgSGVhbHRoIGluIHRoZSByYXRpb25hbGUgZm9yIGl0cyBmaXJzdCBwaWxvdCBzdXBlcnZpc2VkIGluamVjdGluZyBmYWNpbGl0eS48L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0icHViLWxpbmtzIj4KICAgICAgICA8YSBocmVmPSIjcHViLW1zaXIiPlBhcGVyIOKGkTwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5kcnVnc2FuZGFsY29ob2wuaWUvMzk5MjkvMS9EU19PdmVyZG9zZV9wcmV2ZW50aW9uX2NlbnRyZXNfUmVwb3J0LnBkZiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlFVQiBldmlkZW5jZSByZXZpZXc8L2E+CiAgICAgICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly93d3cuZ292LmllL2VuL2RlcGFydG1lbnQtb2YtaGVhbHRoL3ByZXNzLXJlbGVhc2VzL21pbmlzdGVyLW9mLXN0YXRlLWNvbG0tYnVya2UtZ3JhbnRzLWxpY2VuY2UtZm9yLWlyZWxhbmRzLWZpcnN0LXBpbG90LXN1cGVydmlzZWQtaW5qZWN0aW5nLWZhY2lsaXR5LWluLWR1Ymxpbi1jaXR5LWNlbnRyZS8iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5JcmlzaCBEZXBhcnRtZW50IG9mIEhlYWx0aDwvYT4KICAgICAgPC9kaXY+CiAgICA8L2xpPgoKICAgIDxsaT4KICAgICAgPHNwYW4gY2xhc3M9InB1Yi1tYWluIj5Ib3NwaXRhbCBudXJzaW5nIGFzc2Vzc21lbnQsIEF1c3RyYWxpYSAoMjAxOeKAkzI2KTwvc3Bhbj4KICAgICAgPGRpdiBjbGFzcz0icHViLW1ldGEiPlRoZSBFTkNPUkUgdHJpYWwgZW1iZWRkZWQgcHJhY3RpdGlvbmVyLWxlZCBjaGFuZ2VzIHRvIG51cnNpbmcgYXNzZXNzbWVudCBhY3Jvc3MgMTAgaW50ZXJ2ZW50aW9uIHdhcmRzOyBhIGxhdGVyIEF1c3RyYWxpYW4gc3RlcHBlZC13ZWRnZSB0cmlhbCwgQUNDRUxFUkFURSwgZXhwbGljaXRseSBzdGF0ZXMgdGhhdCBpdHMgaW50ZXJ2ZW50aW9uIHdhcyBpbmZvcm1lZCBieSBFTkNPUkUuPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9InB1Yi1saW5rcyI+CiAgICAgICAgPGEgaHJlZj0iI3B1Yi1lbmNvcmUiPlBhcGVyIOKGkTwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5zY2llbmNlZGlyZWN0LmNvbS9zY2llbmNlL2FydGljbGUvcGlpL1MwMDIwNzQ4OTI2MDAzMjRYIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+QUNDRUxFUkFURSB0cmlhbDwvYT4KICAgICAgICDCtyA8YSBocmVmPSJodHRwczovL2FubWoub3JnLmF1L3RyYW5zZm9ybWluZy1udXJzaW5nLWFzc2Vzc21lbnQtaW4tYWN1dGUtaG9zcGl0YWxzLyIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPkFOTUo8L2E+CiAgICAgIDwvZGl2PgogICAgPC9saT4KCiAgPC91bD4KPC9zZWN0aW9uPg==").decode("utf-8")
-          out = before + impact + "\n\n\n<section id=\"grants\">" + after
-          for ident in ('pub-encore', 'pub-msir', 'pub-fines', 'pub-attitudes'):
-              if out.count('id="' + ident + '"') != 1:
-                  raise SystemExit(f"ID validation failed for {ident}")
-          if out.count('<section id="impact">') != 1 or 'ACCELERATE trial' not in out:
-              raise SystemExit("Impact validation failed")
-          p.write_text(out, encoding="utf-8")
-          Path(".github/workflows/check-links.yml").write_text(base64.b64decode("bmFtZTogQ2hlY2sgbGlua3MKCm9uOgogIHdvcmtmbG93X2Rpc3BhdGNoOgogIHNjaGVkdWxlOgogICAgLSBjcm9uOiAiMCAyMCAqICogMCIgIyB3ZWVrbHksIFN1bmRheSAyMDowMCBVVEMKCnBlcm1pc3Npb25zOgogIGNvbnRlbnRzOiByZWFkCgpqb2JzOgogIGxpbmstY2hlY2s6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CgogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2sgbGl2ZSB3ZWJzaXRlIGxpbmtzCiAgICAgICAgdXNlczogbHljaGVldmVyc2UvbHljaGVlLWFjdGlvbkB2MgogICAgICAgIHdpdGg6CiAgICAgICAgICBmYWlsOiB0cnVlCiAgICAgICAgICBhcmdzOiA+CiAgICAgICAgICAgIC0tdmVyYm9zZQogICAgICAgICAgICAtLW5vLXByb2dyZXNzCiAgICAgICAgICAgIC0tbWV0aG9kIGdldAogICAgICAgICAgICAtLW1heC1yZXRyaWVzIDEKICAgICAgICAgICAgLS1tYXgtY29uY3VycmVuY3kgNAogICAgICAgICAgICAtLWFjY2VwdCAiMTAwLi49MTAzLDIwMC4uPTI5OSw0MDMsNDA1LDQyOSw5OTkiCiAgICAgICAgICAgICJodHRwczovL3d3dy5hbGV4ZWV2LnB3LyIKICAgICAgICAgICAgImh0dHBzOi8vd3d3LmFsZXhlZXYucHcvaG9wZS8iCg==").decode("utf-8"), encoding="utf-8")
-          PY
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html .github/workflows/check-links.yml
-          git diff --cached --quiet && exit 0
-          git commit -m "Strengthen selected impact evidence"
-          git push
+          fail: true
+          args: >
+            --verbose
+            --no-progress
+            --method get
+            --max-retries 1
+            --max-concurrency 4
+            --accept "100..=103,200..=299,403,405,429,999"
+            "https://www.alexeev.pw/"
+            "https://www.alexeev.pw/hope/"
