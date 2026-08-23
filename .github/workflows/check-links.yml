@@ -43,3 +43,5 @@ jobs:
           git diff --cached --check
           git commit -m "Clarify teaching record"
           git push
+
+# armed
