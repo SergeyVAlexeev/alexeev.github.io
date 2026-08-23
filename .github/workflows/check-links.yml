@@ -35,11 +35,10 @@ jobs:
           if "York University (2013–2014)" not in out or "GSOM, St Petersburg State University" not in out:
               raise SystemExit("Teaching validation failed")
           p.write_text(out, encoding="utf-8")
-          Path(".github/workflows/check-links.yml").write_text(base64.b64decode("bmFtZTogQ2hlY2sgbGlua3MKCm9uOgogIHdvcmtmbG93X2Rpc3BhdGNoOgogIHNjaGVkdWxlOgogICAgLSBjcm9uOiAiMCAyMCAqICogMCIgIyB3ZWVrbHksIFN1bmRheSAyMDowMCBVVEMKCnBlcm1pc3Npb25zOgogIGNvbnRlbnRzOiByZWFkCgpqb2JzOgogIGxpbmstY2hlY2s6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CgogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2sgbGl2ZSB3ZWJzaXRlIGxpbmtzCiAgICAgICAgdXNlczogbHljaGVldmVyc2UvbHljaGVlLWFjdGlvbkB2MgogICAgICAgIHdpdGg6CiAgICAgICAgICBmYWlsOiB0cnVlCiAgICAgICAgICBhcmdzOiA+CiAgICAgICAgICAgIC0tdmVyYm9zZQogICAgICAgICAgICAtLW5vLXByb2dyZXNzCiAgICAgICAgICAgIC0tbWV0aG9kIGdldAogICAgICAgICAgICAtLW1heC1yZXRyaWVzIDEKICAgICAgICAgICAgLS1tYXgtY29uY3VycmVuY3kgNAogICAgICAgICAgICAtLWFjY2VwdCAiMTAwLi49MTAzLDIwMC4uPTI5OSw0MDMsNDA1LDQyOSw5OTkiCiAgICAgICAgICAgICJodHRwczovL3d3dy5hbGV4ZWV2LnB3LyIKICAgICAgICAgICAgImh0dHBzOi8vd3d3LmFsZXhlZXYucHcvaG9wZS8i").decode("utf-8"), encoding="utf-8")
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html .github/workflows/check-links.yml
+          git add index.html
           git diff --cached --check
           git commit -m "Clarify teaching record"
           git push
