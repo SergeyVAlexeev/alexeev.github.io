@@ -1,28 +1,49 @@
-name: Check links
+name: One-shot publications reorder
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-links.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  link-check:
+  reorder-publications:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check live website links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          fail: true
-          args: >
-            --verbose
-            --no-progress
-            --method get
-            --max-retries 1
-            --max-concurrency 4
-            --accept "100..=103,200..=299,403,405,429,999"
-            "https://www.alexeev.pw/"
-            "https://www.alexeev.pw/hope/"
+      - uses: actions/checkout@v4
+      - name: Move Other Writing after Work in Progress
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if s.count('<section id="publications">') != 1 or s.count('<section id="impact">') != 1:
+              raise SystemExit('Publication/impact section markers not unique')
+          prefix, rest = s.split('<section id="publications">', 1)
+          pubs, suffix = rest.split('<section id="impact">', 1)
+          other_marker = '<details class="pub-fold">\n  <summary>Other Writing</summary>'
+          wip_marker = '<details class="pub-fold">\n  <summary>Work in Progress</summary>'
+          if pubs.count(other_marker) != 1 or pubs.count(wip_marker) != 1:
+              raise SystemExit('Expected one Other Writing and one Work in Progress block')
+          o0 = pubs.index(other_marker)
+          o1 = pubs.index('</details>', o0) + len('</details>')
+          other = pubs[o0:o1]
+          pubs = pubs[:o0] + pubs[o1:]
+          w0 = pubs.index(wip_marker)
+          w1 = pubs.index('</details>', w0) + len('</details>')
+          pubs = pubs[:w1] + '\n\n\n' + other + pubs[w1:]
+          if not (pubs.index('<summary>Forthcoming &amp; Under Review</summary>') < pubs.index('<summary>Work in Progress</summary>') < pubs.index('<summary>Other Writing</summary>')):
+              raise SystemExit('Publication fold order validation failed')
+          out = prefix + '<section id="publications">' + pubs + '<section id="impact">' + suffix
+          p.write_text(out, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Move Other Writing after Work in Progress"
+          git push
