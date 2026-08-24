@@ -19,21 +19,19 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          if s.count('<section id="publications">') != 1 or s.count('<section id="impact">') != 1:
-              raise SystemExit('Publication/impact section markers not unique')
+          if '<section id="publications">' not in s or '<section id="impact">' not in s:
+              raise SystemExit('Publication/impact section marker missing')
           prefix, rest = s.split('<section id="publications">', 1)
           pubs, suffix = rest.split('<section id="impact">', 1)
           forthcoming = '<summary>Forthcoming &amp; Under Review</summary>'
           wip_summary = '<summary>Work in Progress</summary>'
           other_summary = '<summary>Other Writing</summary>'
-          if not all(x in pubs for x in (forthcoming, wip_summary, other_summary)):
-              raise SystemExit('Expected publication folds not found')
+          if pubs.count(forthcoming) != 1 or pubs.count(wip_summary) != 1 or pubs.count(other_summary) != 1:
+              raise SystemExit('Active publication folds are not unique')
           if pubs.index(forthcoming) < pubs.index(wip_summary) < pubs.index(other_summary):
               raise SystemExit(0)
           other_marker = '<details class="pub-fold">\n  <summary>Other Writing</summary>'
           wip_marker = '<details class="pub-fold">\n  <summary>Work in Progress</summary>'
-          if pubs.count(other_marker) != 1 or pubs.count(wip_marker) != 1:
-              raise SystemExit('Expected one Other Writing and one Work in Progress block')
           o0 = pubs.index(other_marker)
           o1 = pubs.index('</details>', o0) + len('</details>')
           other = pubs[o0:o1]
