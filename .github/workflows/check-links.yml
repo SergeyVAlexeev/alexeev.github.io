@@ -1,11 +1,8 @@
 name: One-shot publications reorder
 
-# one-shot trigger
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/check-links.yml'
 
 permissions:
   contents: write
@@ -26,6 +23,13 @@ jobs:
               raise SystemExit('Publication/impact section markers not unique')
           prefix, rest = s.split('<section id="publications">', 1)
           pubs, suffix = rest.split('<section id="impact">', 1)
+          forthcoming = '<summary>Forthcoming &amp; Under Review</summary>'
+          wip_summary = '<summary>Work in Progress</summary>'
+          other_summary = '<summary>Other Writing</summary>'
+          if not all(x in pubs for x in (forthcoming, wip_summary, other_summary)):
+              raise SystemExit('Expected publication folds not found')
+          if pubs.index(forthcoming) < pubs.index(wip_summary) < pubs.index(other_summary):
+              raise SystemExit(0)
           other_marker = '<details class="pub-fold">\n  <summary>Other Writing</summary>'
           wip_marker = '<details class="pub-fold">\n  <summary>Work in Progress</summary>'
           if pubs.count(other_marker) != 1 or pubs.count(wip_marker) != 1:
@@ -37,11 +41,14 @@ jobs:
           w0 = pubs.index(wip_marker)
           w1 = pubs.index('</details>', w0) + len('</details>')
           pubs = pubs[:w1] + '\n\n\n' + other + pubs[w1:]
-          if not (pubs.index('<summary>Forthcoming &amp; Under Review</summary>') < pubs.index('<summary>Work in Progress</summary>') < pubs.index('<summary>Other Writing</summary>')):
+          if not (pubs.index(forthcoming) < pubs.index(wip_summary) < pubs.index(other_summary)):
               raise SystemExit('Publication fold order validation failed')
           out = prefix + '<section id="publications">' + pubs + '<section id="impact">' + suffix
           p.write_text(out, encoding='utf-8')
           PY
+          if git diff --quiet -- index.html; then
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
