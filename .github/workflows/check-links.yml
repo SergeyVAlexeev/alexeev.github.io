@@ -22,14 +22,17 @@ jobs:
           import base64
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
+          before, rest = s.split('<section id="publications">', 1)
+          pubs, after = rest.split('<section id="impact">', 1)
           needle = base64.b64decode("ICAgIDxsaT48YSBjbGFzcz0icHViLXRpdGxlIiBocmVmPSJodHRwczovL2dzb20uc3BidS5ydS9zdHVkZW50cy9ibG9nL2Jsb2cyMDE3XzAyXzEzLyIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPtCj0LzQvtC8INC/0L7RidGD0L/QsNGC0Ywg0YLQviwg0YfRgtC+INCz0LvQsNC30LDQvNC4INC90LUg0YPQstC40LTQtdGC0Yw8L2E+PC9saT4=").decode("utf-8")
           thesis = base64.b64decode("ICAgIDxsaT48YSBjbGFzcz0icHViLXRpdGxlIiBocmVmPSJodHRwczovL29wdXMubGliLnV0cy5lZHUuYXUvaGFuZGxlLzEwNDUzLzE0MDkzMCIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlBoRCB0aGVzaXM6IFRocmVlIEVzc2F5cyBvbiB0aGUgRWNvbm9taWNzIG9mIEVkdWNhdGlvbiBhbmQgSW5lcXVhbGl0eSA8c3BhbiBjbGFzcz0ibWV0YSI+4oCUIFVUUyAoMjAyMCk8L3NwYW4+PC9hPjwvbGk+").decode("utf-8")
-          if s.count(needle) != 1:
-              raise SystemExit(f"Expected one insertion anchor, found {s.count(needle)}")
-          if "opus.lib.uts.edu.au/handle/10453/140930" in s:
-              raise SystemExit("Thesis already present")
-          s = s.replace(needle, needle + "\n" + thesis, 1)
-          p.write_text(s, encoding="utf-8")
+          if pubs.count(needle) != 1:
+              raise SystemExit(f"Expected one active insertion anchor, found {pubs.count(needle)}")
+          if "opus.lib.uts.edu.au/handle/10453/140930" in pubs:
+              raise SystemExit("Thesis already present in active Publications")
+          pubs = pubs.replace(needle, needle + "\n" + thesis, 1)
+          out = before + '<section id="publications">' + pubs + '<section id="impact">' + after
+          p.write_text(out, encoding="utf-8")
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
