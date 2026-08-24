@@ -1,5 +1,6 @@
 name: One-shot publications reorder
 
+# one-shot trigger
 on:
   push:
     branches: [main]
