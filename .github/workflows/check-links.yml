@@ -1,77 +1,28 @@
-name: One-shot JPR publication refresh
+name: Check links
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  patch-jpr:
+  link-check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Promote JPR paper and add media
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64
-
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          doi = 'https://doi.org/10.1093/jopres/xjag064'
-          old_rg = 'https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans'
-
-          if doi in s:
-              raise SystemExit(0)
-
-          pub_start = s.index('<section id="publications">')
-          pub_end = s.index('<section id="impact">', pub_start)
-          pubs = s[pub_start:pub_end]
-
-          fsum = '<summary>Forthcoming &amp; Under Review</summary>'
-          fpos = pubs.index(fsum)
-          f0 = pubs.rfind('<details class="pub-fold">', 0, fpos)
-          f1 = pubs.index('</details>', fpos) + len('</details>')
-          forthcoming = pubs[f0:f1]
-          if old_rg not in forthcoming:
-              raise SystemExit('Old under-review JPR entry not found')
-          opos = forthcoming.index(old_rg)
-          li0 = forthcoming.rfind('<li>', 0, opos)
-          li1 = forthcoming.index('</li>', opos) + len('</li>')
-          forthcoming = forthcoming[:li0] + forthcoming[li1:]
-          pubs = pubs[:f0] + forthcoming + pubs[f1:]
-
-          list_anchor = '<h3>Journal articles &amp; related media coverage</h3>\n\n  <ul class="publist">'
-          if pubs.count(list_anchor) != 1:
-              raise SystemExit('Main journal-list anchor not unique')
-
-          block = base64.b64decode('Cgo8bGk+CiAgPGEgY2xhc3M9InB1Yi10aXRsZSIgaHJlZj0iaHR0cHM6Ly9kb2kub3JnLzEwLjEwOTMvam9wcmVzL3hqYWcwNjQiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj4KICAgIEZyb20gc3RhdGUgaGVyb2VzIHRvIHNvY2lhbCBwYXJpYWhzPyBDaXZpbGlhbiBoaXJpbmcgYW5kIHZvbHVudGFyeSBzZXJ2aWNlIGluIFJ1c3NpYeKAmXMgd2FyIGluIFVrcmFpbmUKICAgIDxzcGFuIGNsYXNzPSJhYnMiPkluIGEgY29ycmVzcG9uZGVuY2UgYXVkaXQgb24gbWFqb3IgUnVzc2lhbiBqb2IgcGxhdGZvcm1zLCBhcHBsaWNhbnRzIHNpZ25hbGxpbmcgdm9sdW50YXJ5IHNlcnZpY2UgaW4gdGhlIFVrcmFpbmUgd2FyIHJlY2VpdmVkIGFib3V0IG9uZS10aGlyZCBmZXdlciBjYWxsYmFja3MgdGhhbiBvdGhlcndpc2Ugc2ltaWxhciBjb25zY3JpcHRzLCByZXZlYWxpbmcgYSBnYXAgYmV0d2VlbiB0aGUgS3JlbWxpbuKAmXMgaGVyb2ljIG5hcnJhdGl2ZSBhbmQgY2l2aWxpYW4gZW1wbG95ZXIgYmVoYXZpb3VyLjwvc3Bhbj4KICA8L2E+CiAgPGRpdiBjbGFzcz0icHViLWxpbmtzIj4KICAgIDxhIGhyZWY9Imh0dHBzOi8vZG9pLm9yZy8xMC4xMDkzL2pvcHJlcy94amFnMDY0IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+Sm91cm5hbCBvZiBQZWFjZSBSZXNlYXJjaCAoMjAyNik8L2E+CiAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5yZXNlYXJjaGdhdGUubmV0L3B1YmxpY2F0aW9uLzM5OTY1Mjc5Ml9TdGF0ZV9IZXJvZXNfU29jaWFsX1BhcmlhaHNfQV9TdHVkeV9vbl9Va3JhaW5lX1dhcl9WZXRlcmFucyIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlBvc3QtcHJpbnQ8L2E+CiAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5wcmlvLm9yZy9uZXdzLzM3MzciIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5QUklPPC9hPgogICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly9ibG9ncy5sc2UuYWMudWsvZXVyb3BwYmxvZy8yMDI2LzA4LzI1L3J1c3NpYXMtZW1wbG95ZXJzLXVrcmFpbmUtdmV0ZXJhbnMtam9icy1wdXRpbi8iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5MU0UgRXVyb3BlYW4gUG9saXRpY3MgYW5kIFBvbGljeTwvYT4KICAgIMK3IDxhIGhyZWY9Imh0dHBzOi8vdGhlY29udmVyc2F0aW9uLmNvbS9ydXNzaWFzLXZvbHVudGVlci1zb2xkaWVycy1tYXktZmFjZS10b3VnaGVyLWpvYi1wcm9zcGVjdHMtYWZ0ZXItcmV0dXJuaW5nLWZyb20tdWtyYWluZS1zdHVkeS0yODkwNDUiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5UaGUgQ29udmVyc2F0aW9uPC9hPgogIDwvZGl2Pgo8L2xpPgo=').decode('utf-8')
-          pubs = pubs.replace(list_anchor, list_anchor + block, 1)
-
-          if pubs.count(doi) != 2:
-              raise SystemExit(f'Expected title+journal DOI links, found {pubs.count(doi)}')
-          fpos2 = pubs.index(fsum)
-          f02 = pubs.rfind('<details class="pub-fold">', 0, fpos2)
-          f12 = pubs.index('</details>', fpos2) + len('</details>')
-          if old_rg in pubs[f02:f12]:
-              raise SystemExit('Old under-review entry still present')
-          for url in (
-              'https://www.prio.org/news/3737',
-              'https://blogs.lse.ac.uk/europpblog/2026/08/25/russias-employers-ukraine-veterans-jobs-putin/',
-              'https://theconversation.com/russias-volunteer-soldiers-may-face-tougher-job-prospects-after-returning-from-ukraine-study-289045',
-          ):
-              if pubs.count(url) != 1:
-                  raise SystemExit(f'Media link validation failed: {url}')
-
-          out = s[:pub_start] + pubs + s[pub_end:]
-          p.write_text(out, encoding='utf-8')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Publish JPR veterans paper and media"
-          git push
+      - name: Check live website links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          args: >
+            --verbose
+            --no-progress
+            --method get
+            --max-retries 1
+            --max-concurrency 4
+            --accept "100..=103,200..=299,403,405,429,999"
+            "https://www.alexeev.pw/"
+            "https://www.alexeev.pw/hope/"
