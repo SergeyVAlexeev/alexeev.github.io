@@ -1,0 +1,1 @@
+Trigger one-shot EUROPP label normalization.
