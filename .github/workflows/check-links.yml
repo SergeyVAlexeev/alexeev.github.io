@@ -1,28 +1,96 @@
-name: Check links
+name: One-shot JPR publication refresh
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/check-links.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  link-check:
+  patch-jpr:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check live website links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          fail: true
-          args: >
-            --verbose
-            --no-progress
-            --method get
-            --max-retries 1
-            --max-concurrency 4
-            --accept "100..=103,200..=299,403,405,429,999"
-            "https://www.alexeev.pw/"
-            "https://www.alexeev.pw/hope/"
+      - uses: actions/checkout@v4
+      - name: Promote JPR paper and add media
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          doi = 'https://doi.org/10.1093/jopres/xjag064'
+          old_rg = 'https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans'
+
+          if doi in s:
+              raise SystemExit(0)
+
+          pub_start = s.index('<section id="publications">')
+          pub_end = s.index('<section id="impact">', pub_start)
+          pubs = s[pub_start:pub_end]
+
+          # Remove the old active under-review listing while retaining the same RG URL as Post-print below.
+          fsum = '<summary>Forthcoming &amp; Under Review</summary>'
+          fpos = pubs.index(fsum)
+          f0 = pubs.rfind('<details class="pub-fold">', 0, fpos)
+          f1 = pubs.index('</details>', fpos) + len('</details>')
+          forthcoming = pubs[f0:f1]
+          if old_rg not in forthcoming:
+              raise SystemExit('Old under-review JPR entry not found')
+          opos = forthcoming.index(old_rg)
+          li0 = forthcoming.rfind('<li>', 0, opos)
+          li1 = forthcoming.index('</li>', opos) + len('</li>')
+          forthcoming = forthcoming[:li0] + forthcoming[li1:]
+          pubs = pubs[:f0] + forthcoming + pubs[f1:]
+
+          # Add the published paper at the top of the main journal list.
+          list_anchor = '<h3>Journal articles &amp; related media coverage</h3>\n\n  <ul class="publist">'
+          if pubs.count(list_anchor) != 1:
+              raise SystemExit('Main journal-list anchor not unique')
+
+          block = '''
+
+<li>
+  <a class="pub-title" href="https://doi.org/10.1093/jopres/xjag064" target="_blank" rel="noopener">
+    From state heroes to social pariahs? Civilian hiring and voluntary service in Russia’s war in Ukraine
+    <span class="abs">In a correspondence audit on major Russian job platforms, applicants signalling voluntary service in the Ukraine war received about one-third fewer callbacks than otherwise similar conscripts, revealing a gap between the Kremlin’s heroic narrative and civilian employer behaviour.</span>
+  </a>
+  <div class="pub-links">
+    <a href="https://doi.org/10.1093/jopres/xjag064" target="_blank" rel="noopener">Journal of Peace Research (2026)</a>
+    · <a href="https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans" target="_blank" rel="noopener">Post-print</a>
+    · <a href="https://www.prio.org/news/3737" target="_blank" rel="noopener">PRIO</a>
+    · <a href="https://blogs.lse.ac.uk/europpblog/2026/08/25/russias-employers-ukraine-veterans-jobs-putin/" target="_blank" rel="noopener">LSE European Politics and Policy</a>
+    · <a href="https://theconversation.com/russias-volunteer-soldiers-may-face-tougher-job-prospects-after-returning-from-ukraine-study-289045" target="_blank" rel="noopener">The Conversation</a>
+  </div>
+</li>
+'''
+          pubs = pubs.replace(list_anchor, list_anchor + block, 1)
+
+          # Validate the active publications section only.
+          if pubs.count(doi) != 2:
+              raise SystemExit(f'Expected title+journal DOI links, found {pubs.count(doi)}')
+          fpos2 = pubs.index(fsum)
+          f02 = pubs.rfind('<details class="pub-fold">', 0, fpos2)
+          f12 = pubs.index('</details>', fpos2) + len('</details>')
+          if old_rg in pubs[f02:f12]:
+              raise SystemExit('Old under-review entry still present')
+          for url in (
+              'https://www.prio.org/news/3737',
+              'https://blogs.lse.ac.uk/europpblog/2026/08/25/russias-employers-ukraine-veterans-jobs-putin/',
+              'https://theconversation.com/russias-volunteer-soldiers-may-face-tougher-job-prospects-after-returning-from-ukraine-study-289045',
+          ):
+              if pubs.count(url) != 1:
+                  raise SystemExit(f'Media link validation failed: {url}')
+
+          out = s[:pub_start] + pubs + s[pub_end:]
+          p.write_text(out, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish JPR veterans paper and media"
+          git push
