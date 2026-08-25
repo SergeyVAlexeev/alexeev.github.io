@@ -32,7 +32,6 @@ jobs:
           pub_end = s.index('<section id="impact">', pub_start)
           pubs = s[pub_start:pub_end]
 
-          # Remove the old active under-review listing while retaining the same RG URL as Post-print below.
           fsum = '<summary>Forthcoming &amp; Under Review</summary>'
           fpos = pubs.index(fsum)
           f0 = pubs.rfind('<details class="pub-fold">', 0, fpos)
@@ -46,7 +45,6 @@ jobs:
           forthcoming = forthcoming[:li0] + forthcoming[li1:]
           pubs = pubs[:f0] + forthcoming + pubs[f1:]
 
-          # Add the published paper at the top of the main journal list.
           list_anchor = '<h3>Journal articles &amp; related media coverage</h3>\n\n  <ul class="publist">'
           if pubs.count(list_anchor) != 1:
               raise SystemExit('Main journal-list anchor not unique')
@@ -69,7 +67,6 @@ jobs:
 '''
           pubs = pubs.replace(list_anchor, list_anchor + block, 1)
 
-          # Validate the active publications section only.
           if pubs.count(doi) != 2:
               raise SystemExit(f'Expected title+journal DOI links, found {pubs.count(doi)}')
           fpos2 = pubs.index(fsum)
@@ -94,3 +91,4 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish JPR veterans paper and media"
           git push
+# trigger refresh
