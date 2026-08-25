@@ -3,8 +3,6 @@ name: One-shot JPR publication refresh
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/check-links.yml'
 
 permissions:
   contents: write
@@ -91,4 +89,3 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish JPR veterans paper and media"
           git push
-# trigger refresh
