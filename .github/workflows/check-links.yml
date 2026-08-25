@@ -17,6 +17,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import base64
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
@@ -47,22 +48,7 @@ jobs:
           if pubs.count(list_anchor) != 1:
               raise SystemExit('Main journal-list anchor not unique')
 
-          block = '''
-
-<li>
-  <a class="pub-title" href="https://doi.org/10.1093/jopres/xjag064" target="_blank" rel="noopener">
-    From state heroes to social pariahs? Civilian hiring and voluntary service in Russia’s war in Ukraine
-    <span class="abs">In a correspondence audit on major Russian job platforms, applicants signalling voluntary service in the Ukraine war received about one-third fewer callbacks than otherwise similar conscripts, revealing a gap between the Kremlin’s heroic narrative and civilian employer behaviour.</span>
-  </a>
-  <div class="pub-links">
-    <a href="https://doi.org/10.1093/jopres/xjag064" target="_blank" rel="noopener">Journal of Peace Research (2026)</a>
-    · <a href="https://www.researchgate.net/publication/399652792_State_Heroes_Social_Pariahs_A_Study_on_Ukraine_War_Veterans" target="_blank" rel="noopener">Post-print</a>
-    · <a href="https://www.prio.org/news/3737" target="_blank" rel="noopener">PRIO</a>
-    · <a href="https://blogs.lse.ac.uk/europpblog/2026/08/25/russias-employers-ukraine-veterans-jobs-putin/" target="_blank" rel="noopener">LSE European Politics and Policy</a>
-    · <a href="https://theconversation.com/russias-volunteer-soldiers-may-face-tougher-job-prospects-after-returning-from-ukraine-study-289045" target="_blank" rel="noopener">The Conversation</a>
-  </div>
-</li>
-'''
+          block = base64.b64decode('Cgo8bGk+CiAgPGEgY2xhc3M9InB1Yi10aXRsZSIgaHJlZj0iaHR0cHM6Ly9kb2kub3JnLzEwLjEwOTMvam9wcmVzL3hqYWcwNjQiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj4KICAgIEZyb20gc3RhdGUgaGVyb2VzIHRvIHNvY2lhbCBwYXJpYWhzPyBDaXZpbGlhbiBoaXJpbmcgYW5kIHZvbHVudGFyeSBzZXJ2aWNlIGluIFJ1c3NpYeKAmXMgd2FyIGluIFVrcmFpbmUKICAgIDxzcGFuIGNsYXNzPSJhYnMiPkluIGEgY29ycmVzcG9uZGVuY2UgYXVkaXQgb24gbWFqb3IgUnVzc2lhbiBqb2IgcGxhdGZvcm1zLCBhcHBsaWNhbnRzIHNpZ25hbGxpbmcgdm9sdW50YXJ5IHNlcnZpY2UgaW4gdGhlIFVrcmFpbmUgd2FyIHJlY2VpdmVkIGFib3V0IG9uZS10aGlyZCBmZXdlciBjYWxsYmFja3MgdGhhbiBvdGhlcndpc2Ugc2ltaWxhciBjb25zY3JpcHRzLCByZXZlYWxpbmcgYSBnYXAgYmV0d2VlbiB0aGUgS3JlbWxpbuKAmXMgaGVyb2ljIG5hcnJhdGl2ZSBhbmQgY2l2aWxpYW4gZW1wbG95ZXIgYmVoYXZpb3VyLjwvc3Bhbj4KICA8L2E+CiAgPGRpdiBjbGFzcz0icHViLWxpbmtzIj4KICAgIDxhIGhyZWY9Imh0dHBzOi8vZG9pLm9yZy8xMC4xMDkzL2pvcHJlcy94amFnMDY0IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciI+Sm91cm5hbCBvZiBQZWFjZSBSZXNlYXJjaCAoMjAyNik8L2E+CiAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5yZXNlYXJjaGdhdGUubmV0L3B1YmxpY2F0aW9uLzM5OTY1Mjc5Ml9TdGF0ZV9IZXJvZXNfU29jaWFsX1BhcmlhaHNfQV9TdHVkeV9vbl9Va3JhaW5lX1dhcl9WZXRlcmFucyIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9vcGVuZXIiPlBvc3QtcHJpbnQ8L2E+CiAgICDCtyA8YSBocmVmPSJodHRwczovL3d3dy5wcmlvLm9yZy9uZXdzLzM3MzciIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5QUklPPC9hPgogICAgwrcgPGEgaHJlZj0iaHR0cHM6Ly9ibG9ncy5sc2UuYWMudWsvZXVyb3BwYmxvZy8yMDI2LzA4LzI1L3J1c3NpYXMtZW1wbG95ZXJzLXVrcmFpbmUtdmV0ZXJhbnMtam9icy1wdXRpbi8iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5MU0UgRXVyb3BlYW4gUG9saXRpY3MgYW5kIFBvbGljeTwvYT4KICAgIMK3IDxhIGhyZWY9Imh0dHBzOi8vdGhlY29udmVyc2F0aW9uLmNvbS9ydXNzaWFzLXZvbHVudGVlci1zb2xkaWVycy1tYXktZmFjZS10b3VnaGVyLWpvYi1wcm9zcGVjdHMtYWZ0ZXItcmV0dXJuaW5nLWZyb20tdWtyYWluZS1zdHVkeS0yODkwNDUiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5UaGUgQ29udmVyc2F0aW9uPC9hPgogIDwvZGl2Pgo8L2xpPgo=').decode('utf-8')
           pubs = pubs.replace(list_anchor, list_anchor + block, 1)
 
           if pubs.count(doi) != 2:
