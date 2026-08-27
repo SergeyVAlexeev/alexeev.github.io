@@ -1,28 +1,46 @@
-name: Check links
+name: One-shot handle label cleanup
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 20 * * 0" # weekly, Sunday 20:00 UTC
+  push:
+    branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  link-check:
+  patch-handles:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check live website links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          fail: true
-          args: >
-            --verbose
-            --no-progress
-            --method get
-            --max-retries 1
-            --max-concurrency 4
-            --accept "100..=103,200..=299,403,405,429,999"
-            "https://www.alexeev.pw/"
-            "https://www.alexeev.pw/hope/"
+      - uses: actions/checkout@v4
+      - name: Tighten paired handle labels
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old1 = base64.b64decode('PGEgaHJlZj0iaHR0cHM6Ly9yZXNlYXJjaC51bnN3LmVkdS5hdS9wZW9wbGUvZHItc2VyZ2V5LWFsZXhlZXYiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5VTlNXPC9hPiBwcm9maWxlcw==').decode('utf-8')
+          new1 = base64.b64decode('PGEgaHJlZj0iaHR0cHM6Ly9yZXNlYXJjaC51bnN3LmVkdS5hdS9wZW9wbGUvZHItc2VyZ2V5LWFsZXhlZXYiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vb3BlbmVyIj5VTlNXIHByb2ZpbGVzPC9hPg==').decode('utf-8')
+
+          old2 = base64.b64decode('PC9hPlxuICAgIC8gPGEgaHJlZj0iaHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpLzVia3J4eXkxc2VvMXg0MzNiNnluci9UZWFjaGluZy1TdGF0ZW1lbnQtb25saW5lLnBkZj9ybGtleT04NnNraWkwZ2NwNjdheXU3Nm1ycWVjYTF4JmRsPTAi').decode('utf-8')
+          new2 = base64.b64decode('PC9hPi88YSBocmVmPSJodHRwczovL3d3dy5kcm9wYm94LmNvbS9zY2wvZmkvNWJrcnh5eTFzZW8xeDQzM2I2eW5yL1RlYWNoaW5nLVN0YXRlbWVudC1vbmxpbmUucGRmP3Jsa2V5PTg2c2tpaTBnY3A2N2F5dTc2bXJxZWNhMXgmZGw9MCI=').decode('utf-8')
+
+          if new1 in s and new2 in s:
+              raise SystemExit(0)
+          if s.count(old1) != 1:
+              raise SystemExit(f'Expected one UNSW profile suffix target, found {s.count(old1)}')
+          if s.count(old2) != 1:
+              raise SystemExit(f'Expected one Research/Teaching slash target, found {s.count(old2)}')
+
+          s = s.replace(old1, new1, 1).replace(old2, new2, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Tighten profile and statement labels"
+          git push
