@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           for attempt in {1..12}; do
-            if curl -fsSL "https://www.alexeev.pw/" | grep -Fq "https://doi.org/10.1016/j.ijnurstu.2026.105652"; then
+            if curl -fsSL -H "Cache-Control: no-cache" "https://www.alexeev.pw/?verify=${GITHUB_SHA}" | grep -Fq "https://doi.org/10.1016/j.ijnurstu.2026.105652"; then
               exit 0
             fi
             sleep 5
